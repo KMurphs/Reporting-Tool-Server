@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require("fs");
+const mysql = require("mysql");
 
 const config = require("./common/config/env.config")
 const version = "1.0.0"

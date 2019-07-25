@@ -2,7 +2,7 @@
 Reporting Tool for Periseo, written as a microservice (Unit tested) and recorded in the database
 
 
-## Creating and Uploading application image
+## Creating, Uploading, Deploying anad Accessing application image on kubernetes (docker-for-desktop)
 
 ### Setting up image repository
 
@@ -58,7 +58,7 @@ npm-debug.log
 
 
 
-## Creating the app deployment and exposigin it on kubernetes
+### Creating the app deployment and exposing it on kubernetes
 
 The folder k8s contains the yaml file specifying the app deployment
 ```
@@ -76,4 +76,54 @@ Now a get request at ``localhost:30000/version`` should yield:
     "version": "1.0.0",
     "name": "node application"
 }
+```
+
+
+
+
+## Creating, Uploading, Deploying and Accessing mysql Database image on kubernetes (docker-for-desktop)
+
+
+### Creating secrets for mysql use
+
+This first secret is the normal user that will interact with the database
+```
+kubectl create secret generic mysql-user-pass --from-file=./k8s/secrets/mysql_user --from-file=./k8s/secrets/mysql_password
+```
+
+Before the database can be initialized, ``You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD``
+```
+kubectl create secret generic mysql-root-pass --from-file=./k8s/secrets/mysql_root_password
+```
+
+### Mysql Deployment, service, persistentVolume and persistentVolumeClaim
+
+Run
+```
+kubectl apply -f k8s/mysql.yml
+```
+
+### Interacting with the Database
+
+The database is located on the host identified by the `Service Name` in this case `reporting-mysql` accroding to the definition in mysql.yml
+
+Create a database, and a table with an entry
+```
+kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --  mysql -h reporting-mysql -p<YOUR MYSQL ROOT PASSWORD><<EOF
+CREATE DATABASE test;
+CREATE TABLE test.messages (message VARCHAR(250));
+INSERT INTO test.messages VALUES ('hello');
+EOF
+```
+The command above spins an ephemerial mysql pod/client to execute the mysql commands and die.
+
+
+View the database created content as root user
+```
+kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --  mysql -h reporting-mysql -p<YOUR MYSQL ROOT PASSWORD> -e "SELECT * FROM test.messages"
+```
+
+View the database created content as another user
+```
+kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --  mysql -h reporting-mysql -u <ANOTHER ALREADY CONFIGURED USER> -p<THE USER'S PASSWORD> -e "SELECT * FROM test.messages"
 ```

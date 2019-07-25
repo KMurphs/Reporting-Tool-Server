@@ -28,9 +28,21 @@ spec:
         app: reporting-tool
     spec:
       containers:
-        - name: reporting-tool
-          image: cloud.canister.io:5000/kmurphs/reporting-tool-microservice
-          ports:
-            - containerPort: 5000
+      - name: reporting-tool
+        image: cloud.canister.io:5000/kmurphs/reporting-tool-microservice
+        ports:
+          - containerPort: 5000
+        env:
+        - name: MYSQL_DB_HOST
+          value: reporting-tool-mysql
+        - name: MYSQL_DB_USER
+          value: tester
+        - name: MYSQL_DB_NAME
+          value: test_schema
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-user-pass
+              key: mysql_password
       imagePullSecrets:
          - name: canister-cred # secret that K8s uses to access image
