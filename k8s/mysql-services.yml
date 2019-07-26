@@ -1,0 +1,29 @@
+# Headless service for stable DNS entries of StatefulSet members.
+apiVersion: v1
+kind: Service
+metadata:
+  name: reporting-mysql
+  labels:
+    app: reporting-mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None
+  selector:
+    app: reporting-mysql
+---
+# Client service for connecting to any MySQL instance for reads.
+# For writes, you must instead connect to the master: mysql-0.reporting-mysql <Master Pod>.<Service Name - DNS>
+apiVersion: v1
+kind: Service
+metadata:
+  name: reporting-mysql-read
+  labels:
+    app: reporting-mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: reporting-mysql

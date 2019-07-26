@@ -34,7 +34,7 @@ spec:
           - containerPort: 5000
         env:
         - name: MYSQL_DB_HOST
-          value: reporting-tool-mysql
+          value: reporting-mysql
         - name: MYSQL_DB_USER
           value: tester
         - name: MYSQL_DB_NAME
@@ -42,7 +42,7 @@ spec:
         - name: MYSQL_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mysql-user-pass
-              key: mysql_password
+              name: reporting-mysql-pass
+              key: mysql_tester_password
       imagePullSecrets:
          - name: canister-cred # secret that K8s uses to access image
