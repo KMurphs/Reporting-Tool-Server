@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         REGISTRY_CREDS = credentials('canister-credentials')
-        IMAGE_NAME = ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR./${params.APP_NAME}:${params.TAG}
+        IMAGE_NAME = ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG}
     }
     stages {
         stage('Build') { 
