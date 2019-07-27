@@ -1,0 +1,20 @@
+pipeline {
+    agent {
+        dockerfile {
+            // docker build -t cloud.canister.io:5000/kmurphs/reporting-mysql:latest -f k8s_applications\mysql\mysql-image\Dockerfile k8s_applications\mysql\mysql-image\
+            filename 'Dockerfile'
+            dir 'k8s_applications/mysql/mysql-image'
+            label 'cloud.canister.io:5000/kmurphs/reporting-mysql:latest'
+            registryUrl 'https://cloud.canister.io'
+            registryCredentialsId 'canister-credentials'
+        }
+    }
+    stages {
+        stage('Build') { 
+            steps {
+                // sh 'npm install'
+                echo "Good so far" 
+            }
+        }
+    }
+}

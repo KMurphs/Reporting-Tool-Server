@@ -70,9 +70,9 @@ npm-debug.log
 
 ### Creating the app deployment and exposing it on kubernetes
 
-The folder k8s contains the yaml file specifying the app deployment
+The folder k8s_applications\node contains the yaml file specifying the app deployment
 ```
-kubectl apply -f k8s\node.yml
+kubectl apply -f k8s_applications\node\node.yml
 ```
 
 Wait for the deployment to rollout
@@ -117,7 +117,7 @@ kubectl create secret generic reporting-mysql-pass --from-file=./k8s/secrets/mys
 
 First of all, 
 ```
-kubectl apply -f k8s/mysql.yml
+kubectl apply -f k8s_applications/mysql/mysql.yml
 ```
 
 
@@ -148,6 +148,17 @@ kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --  mysql -h 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 ## [Creating a mysql master, and 2 replicas](https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/)
 
 The idea is to use one master for write operations, and the 2 database replicas/slaves to handle read operations.
@@ -162,7 +173,7 @@ The following will be based on this [kubernetes doc](https://kubernetes.io/docs/
 Config Maps are a way to inject configuration into future pods. This config map contains configuration for the master and the node. This deployment controller will decide during the pods creation which of the two configuration to inject.
 
 ```
-kubectl apply -f k8s/mysql-configmap.yml
+kubectl apply -f k8s_applications/mysql/mysql-configmap.yml
 ```
 
 > ... you want the master to be able to serve replication logs to slaves and you want slaves to reject any writes that don’t come via replication
@@ -172,7 +183,7 @@ kubectl apply -f k8s/mysql-configmap.yml
 2 services must be created, one for the read operations and one for the master
 
 ```
-kubectl apply -f k8s/mysql-services.yml
+kubectl apply -f k8s_applications/mysql/mysql-services.yml
 ```
 
 > The Headless Service provides a home for the DNS entries that the StatefulSet controller creates for each Pod that’s part of the set. Because the Headless Service is named ``reporting-mysql``, the Pods are accessible by resolving ``<pod-name>.reporting-mysql`` from within any other Pod in the same Kubernetes cluster and namespace.
@@ -209,7 +220,7 @@ Before, we can deploy the statefulset, we need to create a custom image that gra
 There is a ``__dbinit.sh`` provided to handle some of these operations. But since the file was created under windows, ensure that you run ``dos2unix ./_dbinit.sh`` to convert windows end of line into linux end of lines.
 A Dockerfile specifying the above has been created,
 ```
-docker build -t cloud.canister.io:5000/kmurphs/reporting-mysql:latest -f k8s\mysql-image\Dockerfile k8s\mysql-image\
+docker build -t cloud.canister.io:5000/kmurphs/reporting-mysql:latest -f k8s_applications\mysql\mysql-image\Dockerfile k8s_applications\mysql\mysql-image\
 ```
 
 Ensure that a repository has been created as ``reporting-mysql`` on cloud.canister.io under user kmurphs.
@@ -238,7 +249,7 @@ SELECT * FROM test_schema.test_summary_table;
 
 #### Deploying the stateful set
 ```
-kubectl apply -f k8s/mysql-statefulset.yml
+kubectl apply -f k8s_applications/mysql/mysql-statefulset.yml
 ```
 
 
@@ -285,3 +296,72 @@ The get request at ``localhost:30000/units`` should yield:
     ...
 }
 ```
+
+
+
+
+
+
+
+
+
+
+## Configuring a ci-cd with jenkins
+
+
+We need a custom image based on the official jenkins with added support for docker, kubectl. A Dockerfile to create such image was built in ``k8s_applications/jenkins/jenkins-image/Dockerfile``.
+
+Build the image with 
+```
+docker build -t cloud.canister.io:5000/kmurphs/reporting-jenkins:latest -f k8s_applications/jenkins/jenkins-image/Dockerfile k8s_applications/jenkins/jenkins-image
+```
+
+Ensure that a repository has been created as ``reporting-jenkins`` on cloud.canister.io under user kmurphs.
+The image can then be pushed
+```
+docker push cloud.canister.io:5000/kmurphs/reporting-jenkins
+```
+
+Then, a jenkins pods can be instanciated on the kubernetes along with its service, persistent volumes, persistent volumes claims, and RBAC.
+```
+kubectl apply -f k8s_applications/jenkins/jenkins.yaml
+kubectl rollout status deployment/reporting-jenkins
+```
+
+Once the pods has started, the following can be used to obtain the secret needed for the activation of the jenkins container
+```
+$ kubectl get pods --selector=app=reporting-jenkins --output=jsonpath={.items..metadata.name}
+> reporting-jenkins-6479df7474-fbhpr
+
+$ kubectl exec -it reporting-jenkins-6479df7474-fbhpr cat /var/jenkins_home/secrets/initialAdminPassword
+> 49d7cfae032e457bb08561434adaff53
+```
+
+Install recommended plugins, and create the first administrator.
+
+
+
+
+
+
+
+
+#### Step11
+
+Before we create a pipeline, we first need to provision the Kubernetes Continuous Deploy plugin with a kubeconfig file that will allow access to our Kubernetes cluster. In Jenkins on the left, click on **Credentials**, select the **Jenkins** store, then **Global credentials (unrestricted)**, and **Add Credentials** on the left menu.
+
+#### Step12
+
+The following values must be entered precisely as indicated:
+- Kind: `Kubernetes configuration (kubeconfig)`
+- ID: `kenzan_kubeconfig`
+- Kubeconfig: `From a file on the Jenkins master`
+- specify the file path: `/var/jenkins_home/.kube/config`
+
+
+
+
+
+
+
+

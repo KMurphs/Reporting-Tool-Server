@@ -1,0 +1,155 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: reporting-jenkins
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/jenkins/"
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: reporting-jenkins-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: reporting-jenkins
+  namespace: default
+automountServiceAccountToken: true
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: reporting-jenkins-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: reporting-jenkins
+  namespace: default
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: reporting-jenkins-kubectl-context
+data:
+  kubectl-config-context.sh: |-
+    #!/bin/bash -v
+
+    kubectl config set-credentials jenkins --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+    
+    # for witin container deployment
+    # kubectl get service kubernetes --output=jsonpath={.spec.clusterIP} 
+    # server is at 10.96.0.1
+    # kubectl get service kubernetes --output=jsonpath={.spec.ports..port} 
+    # port is at 443
+    kubectl config set-cluster docker-for-desktop-cluster --server="https://10.96.0.1:443" --certificate-authority="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    
+    kubectl config set-context jenkins-docker-for-desktop-cluster --cluster=docker-for-desktop-cluster --user=jenkins --namespace=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+    kubectl config use-context jenkins-docker-for-desktop-cluster
+    chmod 775 ~/.kube/config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: reporting-jenkins
+  labels:
+    app: reporting-jenkins
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30808
+  selector:
+    app: reporting-jenkins
+    tier: jenkins
+  type: NodePort
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: reporting-jenkins
+  labels:
+    app: reporting-jenkins
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: reporting-jenkins
+        tier: jenkins
+    spec:
+      serviceAccountName: reporting-jenkins
+      initContainers:
+      - image: lachlanevenson/k8s-kubectl:v1.11.2
+        name: kubectl-config
+        command:
+        - "/bin/sh"
+        args:
+        - "/kubectl-config-context.sh"
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: "/root/.kube"
+        - name: reporting-jenkins-kubectl-context
+          mountPath: "/kubectl-config-context.sh"
+          subPath: "kubectl-config-context.sh"
+      containers:
+      - image: cloud.canister.io:5000/kmurphs/reporting-jenkins
+        name: reporting-jenkins
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /var/jenkins_home/.kube
+        - name: docker
+          mountPath: /var/run/docker.sock
+        - name: reporting-jenkins-persistent-storage
+          mountPath: /var/jenkins_home
+        ports:
+        - containerPort: 8080
+          name: jenkins
+      imagePullSecrets:
+         - name: canister-cred # secret that K8s uses to access image
+      volumes:
+      - name: reporting-jenkins-kubectl-context
+        configMap:
+          name: reporting-jenkins-kubectl-context
+          items:
+          - key: kubectl-config-context.sh
+            path: kubectl-config-context.sh
+      - name: kubeconfig
+        emptyDir: {}
+      - name: docker
+        hostPath:
+          path: /var/run/docker.sock
+      - name: reporting-jenkins-persistent-storage
+        persistentVolumeClaim:
+          claimName: reporting-jenkins-claim
