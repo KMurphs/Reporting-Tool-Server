@@ -34,7 +34,7 @@ spec:
           - containerPort: 5000
         env:
         - name: MYSQL_DB_HOST
-          value: reporting-mysql
+          value: reporting-mysql-read
         - name: MYSQL_DB_USER
           value: tester
         - name: MYSQL_DB_NAME

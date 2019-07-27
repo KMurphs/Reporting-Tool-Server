@@ -242,15 +242,46 @@ kubectl apply -f k8s/mysql-statefulset.yml
 ```
 
 
-### Sending traffic to our pods
+##### Sending traffic to our pods
 
-#### To the master
+###### To the master
 kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
 mysql -h reporting-mysql-read -u tester -p<Tester Password>  -e "select * from test_schema.test_summary_table"
 
-#### To the slaves
+###### To the slaves
 kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
 mysql -h reporting-mysql-read -u tester -p<Tester Password> -e "select * from test_schema.test_summary_table"
 
 
+#### Accessing the database from the node app
 
+Replace the mysql host address in the node app by the service name ``reporting-mysql-read`` will solve this.
+Send a get request to the node app to see all the units in the database.
+The get request at ``localhost:30000/units`` should yield:
+```
+{
+    "3": {
+        "TestSum_ID": 3,
+        "Serial_Number": "39120000",
+        "Modification_Strike": "0",
+        "Log_TimeStamp": "2018/02/16 12:29:05",
+        "Final_Pass_Fail": "FAIL",
+        "Product_ID": 3,
+        "Client_ID": 1,
+        "Repair_ID": 0,
+        "Batch_ID": 0
+    },
+    "4": {
+        "TestSum_ID": 4,
+        "Serial_Number": "39121234",
+        "Modification_Strike": "0",
+        "Log_TimeStamp": "2018/03/19 18:31:32",
+        "Final_Pass_Fail": "FAIL",
+        "Product_ID": 3,
+        "Client_ID": 1,
+        "Repair_ID": 0,
+        "Batch_ID": 0
+    },
+    ...
+}
+```
