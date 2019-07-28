@@ -27,22 +27,25 @@ pipeline {
         stage('Run and Test') { 
             parallel {
                 stage('Run') { 
+
                     steps {
                         //sh 'docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql'
                     }
                 }
-                stages('Test') { 
-                    stage('Wait on Container Ready') { 
-                        steps {
-                            // sh "until docker exec -it mysql_temp mysqladmin ping -p$TEST_PASSSWORD | grep 'alive'; do echo 'waiting for container to become ready'; done"
-                            sh "until docker exec -it $TEST_CONTAINER_NAME mysql -p$TEST_PASSSWORD -e 'SELECT 1;' | grep '|'' | tail -1; do echo 'waiting for container to become ready'; done"
-                        }
-                    } 
-                    stage('Wait on Container Ready') { 
-                        steps {
-                            sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-test.sh"
-                        }
-                    } 
+                stage('Test') { 
+                    stages{
+                        stage('Wait on Container Ready') { 
+                            steps {
+                                // sh "until docker exec -it mysql_temp mysqladmin ping -p$TEST_PASSSWORD | grep 'alive'; do echo 'waiting for container to become ready'; done"
+                                sh "until docker exec -it $TEST_CONTAINER_NAME mysql -p$TEST_PASSSWORD -e 'SELECT 1;' | grep '|'' | tail -1; do echo 'waiting for container to become ready'; done"
+                            }
+                        } 
+                        stage('Wait on Container Ready') { 
+                            steps {
+                                sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-test.sh"
+                            }
+                        }                         
+                    }
                 }                
             }
         }
