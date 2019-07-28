@@ -17,7 +17,7 @@
 
 
 echo "Obtaining Logs from mysql client after test query"
-res=$(docker exec -it mysql_temp mysql -h "127.0.0.1" -u tester -pTester321! -e "select count(*) from test_schema.test_summary_table;") 
+res=$(docker exec mysql_temp mysql -h "127.0.0.1" -u tester -pTester321! -e "select count(*) from test_schema.test_summary_table;") 
 
 echo "Obtaining test result"
 [[ $res =~ ([0-9]+) ]] || exit 1
