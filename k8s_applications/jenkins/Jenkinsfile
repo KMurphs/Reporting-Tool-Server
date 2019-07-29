@@ -28,14 +28,15 @@ pipeline {
         stage('Run and Test') { 
             parallel {
                 stage('Run') { 
-                    steps {
+                    docker.image('cloud.canister.io:5000/kmurphs/reporting-mysql').withRun("-d -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=TestPassword'") { c ->
+                        /* Wait until mysql service is up */
                         sh 'echo "Running the Image"'
-                        //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
-                        docker.image('cloud.canister.io:5000/kmurphs/reporting-mysql').withRun("-d -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=TestPassword'") { c ->
-                            /* Wait until mysql service is up */
-                            sh 'while ! mysqladmin ping -h0.0.0.0 -p$TEST_PASSSWORD --silent; do sleep 1; done'
-                        }
+                        sh 'while ! mysqladmin ping -h0.0.0.0 -p$TEST_PASSSWORD --silent; do sleep 1; done'
                     }
+                    //steps {
+                        //sh 'echo "Running the Image"'
+                        //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
+                    //}
                 }
                 stage('Execute Test') { 
                     stages{
