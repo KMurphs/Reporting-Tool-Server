@@ -35,26 +35,29 @@ pipeline {
             }
         }
         stage('Run') { 
-            agent {
-                docker {
-                    //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
-                    image "${imageName}"
-                    args  "-u 999 -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD'"
-                }
-            }
-            options {
-                skipDefaultCheckout true
-            }
+            //agent {
+            //    docker {
+            //        //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
+            //        image "${imageName}"
+            //        args  "-u 999 -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD'"
+            //    }
+            //}
+            //options {
+            //    skipDefaultCheckout true
+            //}
             steps {
                 sh 'echo "Running the Image"'
+                sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD cloud.canister.io:5000/kmurphs/reporting-mysql"
                 /* Wait until mysql service is up */
-                sh 'while ! mysqladmin ping -h0.0.0.0 -p$TEST_PASSSWORD --silent; do sleep 1; done'
+                // sh 'while ! mysqladmin ping -h0.0.0.0 -p$TEST_PASSSWORD --silent; do sleep 1; done'
             }
         }
         stage('Wait on Container Ready') { 
             steps {
                 //sh "until docker exec mysql_temp mysqladmin ping -p$TEST_PASSSWORD | grep 'alive'; do echo 'waiting for container to become ready'; done"
-                sh "until docker exec $TEST_CONTAINER_NAME mysql -p$TEST_PASSSWORD -e 'SELECT 1;' | grep '|' | tail -1; do echo 'waiting for container to become ready'; done"
+                sh "while ! docker container ls -f name=$TEST_CONTAINER_NAME | grep $TEST_CONTAINER_NAME; do echo 'waiting for container to start'; done"
+                sh "until docker exec $TEST_CONTAINER_NAME mysqladmin ping -p$TEST_PASSSWORD | grep 'alive'; do echo 'waiting for mysql daemon to become alive'; done"
+                sh "until docker exec $TEST_CONTAINER_NAME mysql -p$TEST_PASSSWORD -e 'SELECT 1;' | grep '|' | tail -1; do echo 'waiting for mysql to become ready'; done"
             }
         } 
         stage('Test') { 

@@ -365,3 +365,5 @@ The following values must be entered precisely as indicated:
 npm install -g jflint
 jflint -c k8s_applications\jenkins\jflint.config k8s_applications\jenkins\Jenkinsfile
 
+
+http://localhost:30808/job/reporting-mysql/30/console
