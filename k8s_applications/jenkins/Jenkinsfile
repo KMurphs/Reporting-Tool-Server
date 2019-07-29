@@ -25,7 +25,7 @@ pipeline {
         stage('Build') { 
             steps {
                 sh 'echo "Building the Custom MYSQL Image"'
-                // sh "docker build -t ${imageName} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/"
+                sh "docker build -t ${imageName} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/"
                 // sh 'echo "Registry user name is $REGISTRY_CREDS_USR"'
                 // sh 'echo "Registry user password is $REGISTRY_CREDS_PSW"'
                 // //sh 'echo "Image name is $IMAGE_NAME"'
