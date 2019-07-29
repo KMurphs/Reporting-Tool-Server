@@ -25,7 +25,7 @@ pipeline {
         stage('Build') { 
             steps {
                 sh 'echo "Building the Custom MYSQL Image"'
-                sh "docker build -t ${imageName} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/"
+                // sh "docker build -t ${imageName} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/"
                 // sh 'echo "Registry user name is $REGISTRY_CREDS_USR"'
                 // sh 'echo "Registry user password is $REGISTRY_CREDS_PSW"'
                 // //sh 'echo "Image name is $IMAGE_NAME"'
@@ -39,7 +39,7 @@ pipeline {
                 docker {
                     //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
                     image "${imageName}"
-                    args  "-u 999-p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD'"
+                    args  "-u 999 -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD'"
                 }
             }
             options {
