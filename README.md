@@ -359,10 +359,22 @@ Configure the job, choose a build trigger (TODO: script). Set the Pipeline Defin
 
 Since we will have to push and pull images against our remote registry repository at ``cloud.canister.io`` we need to upload login details as secret/credentials for use during these operations. 
 In Jenkins on the left, click on ``Credentials``, select the ``Jenkins`` store, then ``Global credentials (unrestricted)``, and ``Add Credentials`` on the left menu.
+Kind ``Username with Password``, scope ``Global (Jenkins, nodes, items, all child items, etc)``. Enter your username ``kmurphs``, password ``<Your Password>``, id for these credentials e.g. ``canister-credentials`` and some description.
+
+In the jenkinsfile, these credentials can be used with
+```
+    environment {
+        REGISTRY_CREDS = credentials('canister-credentials')
+    }
+```
+
+From thereon, if the environment is set as **REGISTRY_CREDS**, then the username can be accessed under ***REGISTRY_CREDS**_USR*** and the password ***REGISTRY_CREDS**_PSW***
+Note: The internal structure of ***REGISTRY_CREDS*** is ``USERNAME:PASSWORD``
 
 
+### Build the Job
 
-
+Navigate to Jenkins home, select the ``reporting-mysql`` job, click on "Build" (or "Build with Parameters").
 
 
 
