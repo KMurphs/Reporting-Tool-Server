@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'TAG', defaultValue: 'latest', description: '')
+        string(name: 'APP_NAME', defaultValue: 'reporting-mysql', description: '')
+        string(name: 'REGISTRY_HOST', defaultValue: 'cloud.canister.io:5000', description: '')
+    }
+    environment {
+        // https://stackoverflow.com/questions/35736377/reference-global-credentials-in-bash-script-in-jenkins-job
+        REGISTRY_CREDS = credentials('canister-credentials')
+        TEST_CONTAINER_NAME = "mysql_temp"
+        TEST_PASSSWORD = "TestPassword!"
+
+        //IMAGE_NAME = ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG}
+    }
+    stages {
+        stage('Setup') {
+            steps {
+                script{
+                    // https://stackoverflow.com/questions/43879733/jenkinsfile-declarative-pipeline-defining-dynamic-env-vars/43881731
+                    imageName = "${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG}"
+                }
+            }
+        }
+        stage('Build') { 
+            steps {
+                sh 'echo "Building the Custom MYSQL Image"'
+                sh "docker build -t ${imageName} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/"
+                // sh 'echo "Registry user name is $REGISTRY_CREDS_USR"'
+                // sh 'echo "Registry user password is $REGISTRY_CREDS_PSW"'
+                // //sh 'echo "Image name is $IMAGE_NAME"'
+                // echo "The Registry host is ${params.REGISTRY_HOST}"
+                // echo "The app name is ${params.APP_NAME}"
+                // echo "The tag is ${params.TAG}"
+            }
+        }
+        stage('Run') { 
+            agent {
+                docker {
+                    //sh "docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql"
+                    image "${imageName}"
+                    args  "-d -p 63306:3306 --name $TEST_CONTAINER_NAME -e 'MYSQL_ROOT_PASSWORD=$TEST_PASSSWORD'"
+                }
+            }
+            steps {
+                sh 'echo "Running the Image"'
+                /* Wait until mysql service is up */
+                sh 'while ! mysqladmin ping -h0.0.0.0 -p$TEST_PASSSWORD --silent; do sleep 1; done'
+            }
+        }
+        stage('Wait on Container Ready') { 
+            steps {
+                //sh "until docker exec mysql_temp mysqladmin ping -p$TEST_PASSSWORD | grep 'alive'; do echo 'waiting for container to become ready'; done"
+                sh "until docker exec $TEST_CONTAINER_NAME mysql -p$TEST_PASSSWORD -e 'SELECT 1;' | grep '|' | tail -1; do echo 'waiting for container to become ready'; done"
+            }
+        } 
+        stage('Test') { 
+            steps {
+                sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-test.sh"
+            }
+            post {
+                always {
+                    sh 'echo "Cleaning up the Test Container"'
+                    sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-clean.sh"
+                }
+            }
+        }                         
+    }    
+
+    post { 
+        success { 
+            sh 'echo "Pushing image to registry"'
+            // https://jenkins.io/doc/pipeline/steps/docker-workflow/
+            withDockerRegistry([credentialsId: 'canister-credentials', url: "https://$REGISTRY_HOST/"]) {
+                //withDockerServer([uri: "tcp://127.0.0.1:2376"]) { 
+                    sh "docker push ${imageName}"
+                //}
+            }
+        }
+    }
+}
