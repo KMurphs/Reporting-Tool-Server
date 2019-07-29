@@ -42,6 +42,15 @@ and push image
 docker push cloud.canister.io:5000/kmurphs/reporting-tool-microservice
 ```
 
+#### Login in the Registry from the CLI
+
+Before pushing the image, it might be necessary to login in the registry from the command line interface, then logout
+```
+docker login --username=kmurphs --password=<Your Password> cloud.canister.io:5000
+docker push cloud.canister.io:5000/kmurphs/reporting-tool-microservice
+docker logout cloud.canister.io:5000
+```
+
 Note that while building the image, it might be necessary to enforce that no cahe be used with the option ``--no-cache`` appended to the build instruction
 
 
@@ -340,15 +349,24 @@ $ kubectl exec -it reporting-jenkins-6479df7474-fbhpr cat /var/jenkins_home/secr
 Install recommended plugins, and create the first administrator.
 
 
+### New Job
+Create a new item, with name ``reporting-mysql`` as a ``Pipeline``. Press "OK"
+
+Configure the job, choose a build trigger (TODO: script). Set the Pipeline Definition to ``Pipeline script from SCM``, set the SCM to ``git``. Under repository, add the http address of your scm repository (git repository) and then set the ``script path`` to ``point to the Jenkins file from the root of your repository``.
+
+
+### Registry Credentials
+
+Since we will have to push and pull images against our remote registry repository at ``cloud.canister.io`` we need to upload login details as secret/credentials for use during these operations. 
+In Jenkins on the left, click on ``Credentials``, select the ``Jenkins`` store, then ``Global credentials (unrestricted)``, and ``Add Credentials`` on the left menu.
 
 
 
 
 
 
-#### Step11
 
-Before we create a pipeline, we first need to provision the Kubernetes Continuous Deploy plugin with a kubeconfig file that will allow access to our Kubernetes cluster. In Jenkins on the left, click on **Credentials**, select the **Jenkins** store, then **Global credentials (unrestricted)**, and **Add Credentials** on the left menu.
+
 
 #### Step12
 
