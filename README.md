@@ -372,28 +372,34 @@ From thereon, if the environment is set as **REGISTRY_CREDS**, then the username
 Note: The internal structure of ***REGISTRY_CREDS*** is ``USERNAME:PASSWORD``
 
 
+### Develop "Configuration as Code"
+
+During the development a few resources are helpful,	
+	1. 	jflint
+		jflint is a npm package to ling the Jenkinsfile during development and can be installed with ``npm install -g jflint``.
+		It can be run with
+```
+		jflint -c k8s_applications\jenkins\jflint.config k8s_applications\jenkins\Jenkinsfile
+```
+	2.	And obviously, google, stackoverflow, the official sites at
+		*	https://jenkins.io/doc/pipeline/examples/
+		*	https://jenkins.io/doc/pipeline/steps/docker-workflow/
+		*	https://jenkins.io/doc/book/pipeline/
+		*	https://jenkins.io/doc/book/pipeline/syntax/
+		*	https://jenkins.io/doc/book/pipeline/docker/
+
 ### Build the Job
 
 Navigate to Jenkins home, select the ``reporting-mysql`` job, click on "Build" (or "Build with Parameters").
-
-
-
-
-
-#### Step12
-
-The following values must be entered precisely as indicated:
-- Kind: `Kubernetes configuration (kubeconfig)`
-- ID: `kenzan_kubeconfig`
-- Kubeconfig: `From a file on the Jenkins master`
-- specify the file path: `/var/jenkins_home/.kube/config`
-
-
-
-
-
-npm install -g jflint
-jflint -c k8s_applications\jenkins\jflint.config k8s_applications\jenkins\Jenkinsfile
-
-
+Logs on current jobs can be accessed with something similar to this
+```
 http://localhost:30808/job/reporting-mysql/30/console
+```
+where, 30 is the incrementing build number.
+
+
+
+
+
+
+
