@@ -16,7 +16,7 @@ pipeline {
         stage('Build') { 
             steps {
                 sh 'echo "Building the Custom MYSQL Image"'
-                // sh 'docker build -t ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/'
+                sh 'docker build -t ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG} -f k8s_applications/mysql/mysql-image/Dockerfile k8s_applications/mysql/mysql-image/'
                 // sh 'echo "Registry user name is $REGISTRY_CREDS_USR"'
                 // sh 'echo "Registry user password is $REGISTRY_CREDS_PSW"'
                 // //sh 'echo "Image name is $IMAGE_NAME"'
@@ -30,7 +30,7 @@ pipeline {
                 stage('Run') { 
                     steps {
                         sh 'echo "Running the Image"'
-                        //sh 'docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql'
+                        sh 'docker run -d -p 63306:3306 --name $TEST_CONTAINER_NAME -e MYSQL_ROOT_PASSWORD=TestPassword! cloud.canister.io:5000/kmurphs/reporting-mysql'
                     }
                 }
                 stage('Execute Test') { 
@@ -49,12 +49,21 @@ pipeline {
                     }
                 }                
             }
-        }
+        }        
+    }    
 
-        stage('Clean Up') { 
-            steps {
-                sh 'echo "Cleaning up the Test Container"'
-                //sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-clean.sh"
+    post { 
+        always { 
+            sh 'echo "Cleaning up the Test Container"'
+            sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-clean.sh"
+        }
+        success { 
+            sh 'echo "Pushing image to registry"'
+            // https://jenkins.io/doc/pipeline/steps/docker-workflow/
+            withDockerServer([uri: "tcp://127.0.0.1:2376"]) {
+                withDockerRegistry([credentialsId: 'canister-credentials', url: "https://$REGISTRY_HOST/"]) {
+                    sh 'docker push ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG}'
+                }
             }
         }
     }
