@@ -12,6 +12,6 @@ RUN chown -R mysql: /docker-entrypoint-initdb.d
 
 # change access rights for mysql user
 RUN chmod u+rwx /docker-entrypoint-initdb.d
-
+USER mysql
 
 EXPOSE 3306
