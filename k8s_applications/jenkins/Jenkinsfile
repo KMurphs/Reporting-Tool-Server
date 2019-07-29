@@ -64,24 +64,16 @@ pipeline {
             steps {
                 sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-test.sh"
             }
-            post {
-                always {
-                    sh 'echo "Cleaning up the Test Container"'
-                    sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-clean.sh"
-                }
-            }
         }                         
     }    
 
     post { 
         success { 
             sh 'echo "Pushing image to registry"'
-            // https://jenkins.io/doc/pipeline/steps/docker-workflow/
-            withDockerRegistry([credentialsId: 'canister-credentials', url: "https://$REGISTRY_HOST/"]) {
-                //withDockerServer([uri: "tcp://127.0.0.1:2376"]) { 
-                    sh "docker push ${imageName}"
-                //}
-            }
+            // https://stackoverflow.com/questions/35736377/reference-global-credentials-in-bash-script-in-jenkins-job/37171727#37171727
+            sh "docker login --username=$REGISTRY_CREDS_USR --password=$REGISTRY_CREDS_PSW $REGISTRY_HOST"
+            sh "docker push ${imageName}"
+            sh "docker logout $REGISTRY_HOST"
         }
         cleanup {
             sh 'echo cleanup'
