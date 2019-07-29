@@ -97,6 +97,9 @@ pipeline {
             dir("${env.WORKSPACE}@tmp") {
                 deleteDir()
             }
+
+            sh 'echo "Cleaning up the Test Container"'
+            sh "./k8s_applications/jenkins/jenkins-utils/reporting-mysql-clean.sh"
         }
     }
 }
