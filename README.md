@@ -352,7 +352,7 @@ Install recommended plugins, and create the first administrator.
 ### New Job
 Create a new item, with name ``reporting-mysql`` as a ``Pipeline``. Press "OK"
 
-Configure the job, choose a build trigger (TODO: script). Set the Pipeline Definition to ``Pipeline script from SCM``, set the SCM to ``git``. Under repository, add the http address of your scm repository (git repository) and then set the ``script path`` to ``point to the Jenkins file from the root of your repository``.
+Configure the job, select build trigger as ``Trigger builds remotey (e.g. from scripts)``, and generate a job authentication token from ``https://randomkeygen.com/`` and copy it there. Set the Pipeline Definition to ``Pipeline script from SCM``, set the SCM to ``git``. Under repository, add the http address of your scm repository (git repository) and then set the ``script path`` to ``point to the Jenkins file from the root of your repository``.
 
 
 ### Registry Credentials
@@ -398,8 +398,40 @@ http://localhost:30808/job/reporting-mysql/30/console
 where, 30 is the incrementing build number.
 
 
+### [Build the job from script](https://humanwhocodes.com/blog/2015/10/triggering-jenkins-builds-by-url/)
 
+We previously generated a ``authentication token`` when we created the job, open the file 
+```
+./k8s_applications/mysql/jenkins-build-reporting-mysql.sh
+```
 
+and update the following
+```
+# Details about job being triggered
+JOB_NAME=reporting-mysql
+JOB_TOKEN=8E584D84D78BD52CD944F69C85FF6
 
+# Details about user triggering them
+TRIGGER_USER_NAME=job_triggerer
+TRIGGER_USER_TOKEN=11e8e9e79e617bf10bc5c62b70fe20437c
+```
 
+Note that a user must be generated for build trigger (In this case, ``job_triggerer`` - TRIGGER_USER_NAME. As you log into jenkins as ***this user (job_triggerer)***, from the user list, click on the “configure” icon, and choose to generate a token - TRIGGER_USER_TOKEN)
 
+Also, this user must have the follwowing rights:
+	*	Overall - Read
+	*    Job - Build
+	*    Job - Read
+	*    Job - Workspace
+
+To configure these permissions:
+    *	Click on Manage Jenkins
+    *	Click on Configure Global Security
+    *	Assuming you’re using matrix-based security: add ``job_triggerer`` to the list and check off the boxes for the necessary permissions
+    *	Click Save
+
+Then a job can be triggered from a bash-like shell with 
+```
+./k8s_applications/mysql/jenkins-build-reporting-mysql.sh "<Job trigger cause>"
+```
+Do not forget to replace the ``<job trigger cause placeholder>`` 
