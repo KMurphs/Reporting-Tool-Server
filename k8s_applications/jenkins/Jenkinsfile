@@ -61,9 +61,9 @@ pipeline {
             sh 'echo "Pushing image to registry"'
             // https://jenkins.io/doc/pipeline/steps/docker-workflow/
             withDockerRegistry([credentialsId: 'canister-credentials', url: "https://$REGISTRY_HOST/"]) {
-                withDockerServer([uri: "tcp://127.0.0.1:2376"]) { 
+                //withDockerServer([uri: "tcp://127.0.0.1:2376"]) { 
                     sh 'docker push ${params.REGISTRY_HOST}/$REGISTRY_CREDS_USR/${params.APP_NAME}:${params.TAG}'
-                }
+                //}
             }
         }
     }
