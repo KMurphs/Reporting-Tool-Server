@@ -379,7 +379,7 @@ During the development a few resources are helpful,
 		jflint is a npm package to ling the Jenkinsfile during development and can be installed with ``npm install -g jflint``.
 		It can be run with
 ```
-		jflint -c k8s_applications\jenkins\jflint.config k8s_applications\jenkins\Jenkinsfile
+		jflint -c k8s_applications\jenkins\jflint.config k8s_applications\mysql\jenkins\Jenkinsfile
 ```
 	2.	And obviously, google, stackoverflow, the official sites at
 		*	https://jenkins.io/doc/pipeline/examples/
@@ -402,7 +402,7 @@ where, 30 is the incrementing build number.
 
 We previously generated a ``authentication token`` when we created the job, open the file 
 ```
-./k8s_applications/mysql/jenkins-build-reporting-mysql.sh
+./k8s_applications/mysql/jenkins/jenkins-build-reporting-mysql.sh
 ```
 
 and update the following
