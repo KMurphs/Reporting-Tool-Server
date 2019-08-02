@@ -26,4 +26,6 @@ sed -i "s/xxxtestxxx/$TESTVAR/g" ./_dbinit.sql
 # cat ./_dbinit.sql
 # head -20 ./backup.sql
 
+redis-server &
+
 echo DONE >> temp.txt
