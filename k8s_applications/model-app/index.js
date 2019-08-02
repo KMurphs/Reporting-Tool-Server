@@ -3,22 +3,48 @@ const app = express();
 const bodyParser = require('body-parser');
 const appRoot = require('app-root-path');
 const winston = require('winston');
-const logger = require('../common/winston.config').init(appRoot, winston)
+const uuid = require('uuid/v4')
+const session = require('express-session')
+const redis   = require("redis");
+const redisClient  = redis.createClient();
+const redisStore = require('connect-redis')(session);
 
+const logger = require('./common/config/winston.config').init(appRoot, winston)
 const config = require("./common/config/env.config")
 const DataRouter = require("./data/routes.config")
+const UsersRouter = require("./users/routes.config")
+const { redisGetHashMapByField } = require("./common/config/redis.utils.js");
+const { passportInit } = require("./users/models/passport.model.js");
 
 process.env.VERSION = "1.0.1"
 process.env.APPNAME = "model application"
 
 const enableDebug = true;
 
+
+
 app.logger = logger;
+app.apiVersion = "v1";
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true
 }))
+app.use(session({
+    genid: (req) => {
+        return uuid() 
+    },
+    store: new redisStore({ 
+        host: 'localhost', 
+        port: 6379, 
+        client: redisClient, 
+        ttl:  260
+    }),
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+}))
+passportInit(app)
 
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -33,6 +59,9 @@ app.use(function(req, res, next) {
         appName: process.env.APPNAME, 
         data: {}
     }
+    
+    console.log(res.locals.reqData)
+    // console.log(app.apiVersion)
 
     if (req.method === 'OPTIONS') {
         return res.send(200);
@@ -42,7 +71,9 @@ app.use(function(req, res, next) {
 });
 
 
+UsersRouter.processRequest(app)
 DataRouter.processRequest(app)
+
 
 // error handler
 app.use(function(err, req, res, next) { 

@@ -1,9 +1,9 @@
 const dataModel = require("../models/data.model.js")
-const errorUtils = require("../../../common/error.utils.js")
+const errorUtils = require("../../common/config/error.utils.js")
 exports.currentApiVersion = "v1";
 
 
-const logger = require("../../../common/winston.config.js").getLogger();
+const logger = require("../../common/config/winston.config.js").getLogger();
 
 
 
