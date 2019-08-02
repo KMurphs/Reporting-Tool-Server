@@ -1,5 +1,7 @@
 const redis   = require("redis");
-const redisClient  = redis.createClient();
+
+const config = require("../../common/config/env.config")
+const redisClient  = redis.createClient({host : config.redisHost, port : config.redisPort});
 const { redisGetHashMapByField } = require("../../common/config/redis.utils.js");
 
 

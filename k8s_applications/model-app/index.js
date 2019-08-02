@@ -6,7 +6,6 @@ const winston = require('winston');
 const uuid = require('uuid/v4')
 const session = require('express-session')
 const redis   = require("redis");
-const redisClient  = redis.createClient();
 const redisStore = require('connect-redis')(session);
 
 const logger = require('./common/config/winston.config').init(appRoot, winston)
@@ -15,6 +14,8 @@ const DataRouter = require("./data/routes.config")
 const UsersRouter = require("./users/routes.config")
 const { redisGetHashMapByField } = require("./common/config/redis.utils.js");
 const { passportInit } = require("./users/models/passport.model.js");
+
+const redisClient  = redis.createClient({host : config.redisHost, port : config.redisPort});
 
 process.env.VERSION = "1.0.1"
 process.env.APPNAME = "model application"
@@ -35,8 +36,8 @@ app.use(session({
         return uuid() 
     },
     store: new redisStore({ 
-        host: 'localhost', 
-        port: 6379, 
+        host: config.redisHost, 
+        port: config.redisPort, 
         client: redisClient, 
         ttl:  260
     }),
@@ -89,6 +90,6 @@ app.use(function(err, req, res, next) {
     res.status(err.statusCode || 500).json((process.env.NODE_ENV !== 'production'? logEntry : msg));
 });
 
-app.listen(config.port, function() {
-    console.log("API Server Listening at Port: " + config.port);
+app.listen(config.appPort, function() {
+    console.log(`API Server Listening at Port: ${config.appPort} on host ${config.appHost}`);
 })

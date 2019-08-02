@@ -1,13 +1,13 @@
 const mysql = require("mysql");
-
+const config = require("../../common/config/env.config")
 
 
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: (process.env.MYSQL_DB_HOST) ? process.env.MYSQL_DB_HOST : "127.0.0.1",
-    user: (process.env.MYSQL_DB_USER) ? process.env.MYSQL_DB_USER : "tester",
-    password: (process.env.MYSQL_DB_PASSWORD) ? process.env.MYSQL_DB_PASSWORD : "Tester321!",
-    database: (process.env.MYSQL_DB_NAME) ? process.env.MYSQL_DB_NAME : "test_schema"
+    host: config.msqlHost,
+    user: config.msqlUser,
+    password: config.msqlPassword,
+    database: config.msqlDatabase
 });
 
 
