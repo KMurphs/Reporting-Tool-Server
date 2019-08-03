@@ -471,3 +471,16 @@ docker run --name model_app --net=testnetwork -p 5001:5000 cloud.canister.io:500
 
 docker build -t cloud.canister.io:5000/kmurphs/reporting-mysql:latest -f k8s_applications\mysql\mysql-image\Dockerfile k8s_applications\mysql\mysql-image\
 docker run -p 63306:3306 -p 6379:6379 --name dbs_temp --net=testnetwork -e MYSQL_ROOT_PASSWORD=TestPasssword cloud.canister.io:5000/kmurphs/reporting-mysql
+
+
+git merge master
+git checkout master
+git merge model-app
+git push origin master
+
+
+## User Interface with vue
+
+npm install -g @vue/cli
+
+vue create <project name>
