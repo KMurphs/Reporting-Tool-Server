@@ -3,7 +3,9 @@
 
 // https://www.npmjs.com/package/winston
 // https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-//
+
+
+
 // Trace - Only when I would be "tracing" the code and trying to find one part of a function specifically.
 // Debug - Information that is diagnostically helpful to people more than just developers (IT, sysadmins, etc.).
 // Info - Generally useful information to log (service start/stop, configuration assumptions, etc). Info I want 
@@ -15,6 +17,22 @@
 // 		These are usually reserved (in my apps) for incorrect connection strings, missing services, etc.
 // Fatal - Any error that is forcing a shutdown of the service or application to prevent data loss (or further data loss). 
 // 		I reserve these only for the most heinous errors and situations where there is guaranteed to have been data corruption or loss.
+
+
+
+
+// trace are built as problems are discovered and troubleshooting is happening
+// debug gives feddback of - what operation the app (controllers) has started and 
+//                         - when the operation is completed
+// info Generally useful information to log (service start/stop, configuration assumptions, etc). Info I want 
+//              to always have available but usually don't care about under normal circumstances.
+// warn when something isn't what it's supposed to be
+// error when operation has failed prematurely
+// critical when app needs to stop
+
+
+
+
 
 
 // const appRoot = require('app-root-path');
@@ -31,7 +49,6 @@
 // logger.silly(logger.createEntry("some.namespace", "Some silly note", res.locals.reqData));
 
 // Font foreground colors: black, red, green, yellow, blue, magenta, cyan, white, gray, grey.
-
 const customLogLevels = {
   	levels: {
     	fatal: 0,
@@ -61,7 +78,7 @@ module.exports.init = function(appRoot, winston){
 	// define the custom settings for each transport (file, console)
 	const options = {
   		file: {
-    		level: 'info',
+    		level: process.env.LOG_LEVEL_FILE || "info",
     		filename: `${appRoot}/logs/app.log`,
     		handleExceptions: true,
     		json: true,
@@ -70,7 +87,7 @@ module.exports.init = function(appRoot, winston){
     		colorize: false,
   		},
   		console: {
-    		level: 'debug',
+    		level: process.env.LOG_LEVEL_CONSOLE || "debug",
     		handleExceptions: true,
     		json: false,
     		colorize: true,
@@ -86,7 +103,8 @@ module.exports.init = function(appRoot, winston){
   		format: winston.format.combine(
     		winston.format.timestamp(),
     		winston.format.simple(),
-    		winston.format.printf( msg => colorizer.colorize(msg.level, `${msg.timestamp} - ${msg.level}: ${msg.namespace} - ${msg.request} - ${(JSON.stringify(msg.message)).substr(0, 500)}...`))
+    		// winston.format.printf( msg => colorizer.colorize(msg.level, `${msg.timestamp} - ${msg.level}: ${msg.namespace} - ${msg.request} - ${(JSON.stringify(msg.message)).substr(0, 500)}...`))
+        winston.format.printf( msg => colorizer.colorize(msg.level, `${msg.timestamp} - ${msg.level}: ${msg.namespace} - ${msg.request} \n\t${(JSON.stringify(msg.message))}\n\n`))
     	),
   		transports: [
     		new winston.transports.File(options.file),

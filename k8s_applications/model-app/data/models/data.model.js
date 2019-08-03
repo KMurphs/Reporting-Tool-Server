@@ -109,17 +109,25 @@ exports.getBatchData = function(snSessions) {
 }
 
 
-exports.getUnitsHistory = function() {
+exports.getUnitsHistory = function(units) {
 
-    const querystring = "SELECT TestSum_ID, Serial_Number, Log_TimeStamp as TimeStamp, Project_Code, Product_Description, Batch_ID, Client_Name \
+    let ids = "";
+    if(units){
+        for(let i = 0; i < units.length; i++){
+            ids = ids + ", " + parseInt(units[i])
+        }
+        ids = ids.substr(2);    
+    }
+
+    const querystring = `SELECT TestSum_ID, Serial_Number, Log_TimeStamp as TimeStamp, Project_Code, Product_Description, Batch_ID, Client_Name \
                         FROM test_schema.test_summary_table \
                         JOIN test_schema.products_table \
                         ON test_summary_table.Product_ID = products_table.Product_ID \
                         JOIN test_schema.clients_table \
                         ON test_summary_table.Client_ID = clients_table.Client_ID \
-                        ORDER BY Serial_Number DESC, Log_TimeStamp DESC;"
-
-    return queryDB(querystring);
+                        xxWHERExx ORDER BY Serial_Number DESC, Log_TimeStamp DESC;`
+    
+    return queryDB(!units || units.length == 0 ? querystring.replace(new RegExp("xxWHERExx", "g"), ``) : querystring.replace(new RegExp("xxWHERExx", "g"), `WHERE Serial_Number in (${ids})`));
 }
 
 

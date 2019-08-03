@@ -2,34 +2,31 @@
 const dataController = require("./controllers/data.controller.js")
 
 exports.processRequest = function(app) {
-    app.get("/data/api/" + dataController.currentApiVersion + "/unitresults/:id", [
-        dataController.getUnitResults
+    app.get("/api/" + app.apiVersion + "/data/unitresults/:id", [
+        dataController.getOneUnitResults
     ])
-    app.get("/data/api/" + dataController.currentApiVersion + "/unitsummary/:id", [
-        dataController.getUnitSummary
+    app.get("/api/" + app.apiVersion + "/data/unitsummary/:id", [
+        dataController.getOneUnitSummary
     ])
-    app.get("/data/api/" + dataController.currentApiVersion + "/unitresults", [
+    app.get("/api/" + app.apiVersion + "/data/unitresults", [
         dataController.getUnitsResults
     ])
-    app.get("/data/api/" + dataController.currentApiVersion + "/unitsummary", [
+    app.get("/api/" + app.apiVersion + "/data/unitsummary", [
         dataController.getUnitsSummaries
     ])
-    app.get("/data/api/" + dataController.currentApiVersion + "/batch", [
-        dataController.getBatchData
+    app.get("/api/" + app.apiVersion + "/data/batch", [
+        dataController.getBatchData //
     ])
-    app.get("/data/api/" + dataController.currentApiVersion + "/units", [
-        dataController.getUnitsHistory
+    app.get("/api/" + app.apiVersion + "/data/units", [
+        dataController.getUnitsHistory //
     ])
-    app.get("/data/api/" + dataController.currentApiVersion, [
+    app.get("/api/" + app.apiVersion, [
         dataController.getAPI_currVersion_Endpoints
     ])
-    app.get("/data/api", [
+    app.get("/api/data", [
         dataController.getAPI_versions
     ])
-    app.get("/data", [
-        dataController.InvalidEndPoint
-    ])
-    app.get("/data/*", [
+    app.get("/api/" + app.apiVersion + "/data/*", [
         dataController.InvalidEndPoint
     ])
 }

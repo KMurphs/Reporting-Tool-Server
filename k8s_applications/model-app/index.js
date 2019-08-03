@@ -15,7 +15,7 @@ const UsersRouter = require("./users/routes.config")
 const { redisGetHashMapByField } = require("./common/config/redis.utils.js");
 const { passportInit } = require("./users/models/passport.model.js");
 
-const redisClient  = redis.createClient({host : config.redisHost, port : config.redisPort});
+const redisClient  = redis.createClient({host: config.redisHost, port: config.redisPort, password: config.redisPassword});
 
 process.env.VERSION = "1.0.1"
 process.env.APPNAME = "model application"
@@ -54,6 +54,7 @@ app.use(function(req, res, next) {
     res.header('Access-Control-Expose-Headers', 'Content-Length');
     res.header('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, X-Requested-With, Range');
 
+
     res.locals.reqData = "'/" + req.method + "' at '"  + req.url + "' with '" + JSON.stringify(req.body) + "'";
     res.locals.resData = {
         appVersion: process.env.VERSION,
@@ -61,7 +62,7 @@ app.use(function(req, res, next) {
         data: {}
     }
     
-    console.log(res.locals.reqData)
+    logger.debug(logger.createEntry("server.main", "New Request Received", res.locals.reqData));
     // console.log(app.apiVersion)
 
     if (req.method === 'OPTIONS') {
@@ -91,5 +92,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(config.appPort, function() {
-    console.log(`API Server Listening at Port: ${config.appPort} on host ${config.appHost}`);
+    const temp = `API Server Listening at Port: ${config.appPort} on host: ${config.appHost}`;
+    //console.log(temp);
+    logger.info(logger.createEntry("server.main", "Server Started", temp));
 })

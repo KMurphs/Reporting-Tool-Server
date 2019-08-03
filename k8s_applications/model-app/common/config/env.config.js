@@ -4,6 +4,7 @@ module.exports = {
 
     "redisPort": process.env.REDIS_PORT || 6379,
     "redisHost": process.env.REDIS_DB_HOST || "127.0.0.1",
+    "redisPassword": process.env.REDIS_DB_PASSWORD || "52F6F45612444B372B117DCCDC45A",
 
     "mysqlPort": process.env.MYSQL_PORT || 3306,
     "msqlUser": process.env.MYSQL_DB_USER || "tester",

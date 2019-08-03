@@ -1,4 +1,7 @@
-const redisClient  = require("redis").createClient();
+const redis   = require("redis");
+
+const config = require("./env.config")
+const redisClient  = redis.createClient({host: config.redisHost, port: config.redisPort, password: config.redisPassword});
 
 module.exports.redisGetHashMapByField = function(hashPattern, fieldName, fieldValue){
 

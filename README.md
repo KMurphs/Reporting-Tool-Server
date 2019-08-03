@@ -435,3 +435,39 @@ Then a job can be triggered from a bash-like shell with
 ./k8s_applications/mysql/jenkins-build-reporting-mysql.sh "<Job trigger cause>"
 ```
 Do not forget to replace the ``<job trigger cause placeholder>`` 
+
+
+
+
+
+
+
+## using redis
+
+
+(printf "PING\r\n"; sleep 1) | ncat 127.0.0.1 6379
+(printf "KEYS * \r\n"; sleep 1) | ncat 127.0.0.1 6379
+(printf "KEYS user:* \r\n") | ncat 127.0.0.1 6379
+
+(printf "AUTH 52F6F45612444B372B117DCCDC45A\r\n PING\r\n"; sleep 1) | nc dbs_temp 6379
+
+
+curl -X GET http://localhost:3001 -c cookie-file.txt
+curl -X GET http://localhost:3001/authrequired -v -b cookie-file.txt -L 
+curl -X POST  http://localhost:3001/signup -v -b cookie-file.txt -H "Content-Type: application/json" -d '{"email":"testemail2", "password":"password"}'
+curl -X POST  http://localhost:3001/login -v -b cookie-file.txt -H "Content-Type: application/json" -d '{"email":"testemail2", "password":"password"}'
+curl -X GET http://localhost:3001/authrequired -v -b cookie-file.txt -L 
+
+
+
+
+## Setting up containers
+
+
+docker network create testnetwork
+
+docker build -t cloud.canister.io:5000/kmurphs/reporting-model:latest -f k8s_applications\model-app\app-image\Dockerfile k8s_applications\model-app\
+docker run --name model_app --net=testnetwork -p 5001:5000 cloud.canister.io:5000/kmurphs/reporting-model
+
+docker build -t cloud.canister.io:5000/kmurphs/reporting-mysql:latest -f k8s_applications\mysql\mysql-image\Dockerfile k8s_applications\mysql\mysql-image\
+docker run -p 63306:3306 -p 6379:6379 --name dbs_temp --net=testnetwork -e MYSQL_ROOT_PASSWORD=TestPasssword cloud.canister.io:5000/kmurphs/reporting-mysql

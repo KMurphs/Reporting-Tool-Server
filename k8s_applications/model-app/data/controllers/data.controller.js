@@ -7,42 +7,56 @@ const logger = require("../../common/config/winston.config.js").getLogger();
 
 
 
-exports.getUnitResults = function(req, res) {
+exports.getOneUnitResults = function(req, res) {
     
     let snSessions = [];
+    logger.debug(logger.createEntry("data.controller.one.result", "Get One Units Results", `Retrieving detailed results for units with sn ${req.params.id}`));
 
-    dataModel.getUnitsHistory().then((data)=>{
-        
+    dataModel.getUnitsHistory([req.params.id]).then((data)=>{
+
         for(item in data){
             snSessions.push(data[item].TestSum_ID);
         }
+
+        logger.trace(logger.createEntry("data.controller.one.result", "Got unit's ID", `Retrieved database id for units with sn ${req.params.id} - id ${JSON.stringify(snSessions)}`));
         
         dataModel.getUnitsResults(snSessions).then((data)=>{
 
-            logger.info(createEntry("server.datacontroller.getunitsresults", "units results were succesffuly fetched from db", res.locals.reqData));
+            logger.trace(logger.createEntry("server.datacontroller.getunitsresults", "units results were succesffuly fetched from db", res.locals.reqData));
             res.locals.resData.data = data;
             res.status(200).json(res.locals.resData);
         }).catch((reason)=>{
-            logger.warn(createEntry("server.datacontroller.getunitsresults", "units results fetch failed", res.locals.reqData));
+            logger.error(logger.createEntry("server.datacontroller.getunitsresults", "REsults Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
         })
     
     })
 
 }
 
-exports.getUnitSummary = function(req, res) {
+exports.getOneUnitSummary = function(req, res) {
     
     let snSessions = [];
 
-    dataModel.getUnitsHistory().then((data)=>{
+    logger.debug(logger.createEntry("server.datacontroller.one.summary", "Getting one Unit's summary", `Obtaining summary for unit with summary ${req.params.id}`));
+
+    dataModel.getUnitsHistory([req.params.id]).then((data)=>{
         
         for(item in data){
             snSessions.push(data[item].TestSum_ID);
         }
+
+        logger.trace(logger.createEntry("server.datacontroller.one.summary", "Retrieved Database ID", `Obtained database id for unit ${JSON.stringify(snSessions)}`));
         
         dataModel.getUnitsSummaries(snSessions).then((data)=>{
+            logger.debug(logger.createEntry("server.datacontroller.one.summary", "Sending Summary", `Sending summary for unit ${req.params.id}`));
             res.locals.resData.data = data;
             res.status(200).json(res.locals.resData);
+        }).catch((reason)=>{
+            logger.error(logger.createEntry("server.datacontroller.one.summary", "Summary Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
         })
     
     })
@@ -54,38 +68,50 @@ exports.getUnitsResults = function(req, res) {
     
     let snSessions = [];
 
-    dataModel.getUnitsHistory().then((data)=>{
-        logger.debug(logger.createEntry("data.controller.getunitresults.getunithistory", "Successfully fetched history", res.locals.reqData));
+    logger.debug(logger.createEntry("server.datacontroller.results", "Getting results data", `Obtaining results for units with id ${req.query.ids ? req.query.ids.split(",") : []}`));
+
+    dataModel.getUnitsHistory(req.query.ids ? req.query.ids.split(",") : []).then((data)=>{
         
         for(item in data){
             snSessions.push(data[item].TestSum_ID);
         }
         
         dataModel.getUnitsResults(snSessions).then((data)=>{
-            logger.debug(logger.createEntry("data.controller.getunitresults.getunithistory.getbatchdata", "Successfully fetched results", res.locals.reqData));
+            logger.debug(logger.createEntry("data.controller.results", "Successfully fetched results", `units ${req.query.ids ? req.query.ids.split(",") : []}`));
             res.locals.resData.data = data;
             res.status(200).json(res.locals.resData);
+        }).catch((reason)=>{
+            logger.error(logger.createEntry("server.datacontroller.one.summary", "REsults Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
         })
     
     })
 
 }
 
+
+
 exports.getUnitsSummaries = function(req, res) {
     
     let snSessions = [];
 
-    dataModel.getUnitsHistory().then((data)=>{
-        logger.debug(logger.createEntry("data.controller.getunitsummary.getunithistory", "Successfully fetched history", res.locals.reqData));
+    logger.debug(logger.createEntry("server.datacontroller.summaries", "Getting summary data", `Obtaining summaries for units with id ${req.query.ids ? req.query.ids.split(",") : []}`));
+
+    dataModel.getUnitsHistory(req.query.ids ? req.query.ids.split(",") : []).then((data)=>{
         
         for(item in data){
             snSessions.push(data[item].TestSum_ID);
         }
         
         dataModel.getUnitsSummaries(snSessions).then((data)=>{
-            logger.debug(logger.createEntry("data.controller.getunitsummary.getunithistory.getbatchdata", "Successfully fetched batch", res.locals.reqData));
+            logger.debug(logger.createEntry("server.datacontroller.summaries", "Successfully fetched summaries", `units ${req.query.ids ? req.query.ids.split(",") : []}`));
             res.locals.resData.data = data;
             res.status(200).json(res.locals.resData);
+        }).catch((reason)=>{
+            logger.error(logger.createEntry("server.datacontroller.summaries", "Summaries Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
         })
     
     })
@@ -96,17 +122,22 @@ exports.getBatchData = function(req, res) {
     
     let snSessions = [];
 
-    dataModel.getUnitsHistory().then((data)=>{
-        logger.debug(logger.createEntry("data.controller.getbatchdata.getunithistory", "Successfully fetched history", res.locals.reqData));
+    logger.debug(logger.createEntry("server.datacontroller.batch", "Getting batch data", `Obtaining batch for units with id ${req.query.ids ? req.query.ids.split(",") : []}`));
+
+    dataModel.getUnitsHistory(req.body.units).then((data)=>{
         
         for(item in data){
             snSessions.push(data[item].TestSum_ID);
         }
         
         dataModel.getBatchData(snSessions).then((data)=>{
-            logger.debug(logger.createEntry("data.controller.getbatchdata.getunithistory.getbatchdata", "Successfully fetched batch", res.locals.reqData));
+            logger.debug(logger.createEntry("server.datacontroller.batch", "Successfully fetched batch", `units ${req.query.ids ? req.query.ids.split(",") : []}`));
             res.locals.resData.data = data;
             res.status(200).json(res.locals.resData);
+        }).catch((reason)=>{
+            logger.error(logger.createEntry("server.datacontroller.batch", "Batch Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
         })
     
     })
@@ -114,11 +145,17 @@ exports.getBatchData = function(req, res) {
 }
 
 exports.getUnitsHistory = function(req, res) {
+
+    logger.debug(logger.createEntry("data.controller.history", "Getting history data", `Obtaining history for all units`));
     
     dataModel.getUnitsHistory().then((data)=>{
-        logger.debug(logger.createEntry("data.controller.getunithistory", "Successfully fetched history", res.locals.reqData));
+        logger.debug(logger.createEntry("data.controller.history", "Successfully fetched history", ''));
         res.locals.resData.data = data;
         res.status(200).json(res.locals.resData);
+    }).catch((reason)=>{
+        logger.error(logger.createEntry("data.controller.history", "History Fetch Failed", `${reason}`));
+        res.locals.resData.data = 'Data Fetch Failed';
+        res.status(500).json(res.locals.resData);
     })
 
 }

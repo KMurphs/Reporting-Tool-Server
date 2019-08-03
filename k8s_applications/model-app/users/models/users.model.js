@@ -1,10 +1,10 @@
 const redis   = require("redis");
 
 const config = require("../../common/config/env.config")
-const redisClient  = redis.createClient({host : config.redisHost, port : config.redisPort});
+const redisClient  = redis.createClient({host: config.redisHost, port: config.redisPort, password: config.redisPassword});
 const { redisGetHashMapByField } = require("../../common/config/redis.utils.js");
 
-
+const logger = require("../../common/config/winston.config.js").getLogger();
 
 
 
