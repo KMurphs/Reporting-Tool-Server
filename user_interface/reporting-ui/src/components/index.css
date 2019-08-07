@@ -1,0 +1,246 @@
+:root {
+    --primary-color: #6200EE;
+    --primary-color--dark: #3700B7;
+    --primary-color--light: #e4ccff;
+    --secondary-color: #03DAC6;
+    --secondary-color--dark: #018786;
+    --background-color: #FFF;
+    --surface-color: #FFF;
+    --error-surface: #B00020;
+    --text-on-primary-color: #FFF;
+    --text-on-secondary-color: #000;
+    --text-on-dark-secondary-color: #FFF;
+    --text-on-error-surface: #FFF;
+    --text-on-background: #000;
+    --text-on-surface: #000;
+    --text-on-faded-background: #999;
+    --faded-background: #EEE;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    /*width: 300vw;*/
+}
+
+#container {
+    margin: 0;
+    padding: 0;
+    width: 300vw;
+    height: 100vh;
+}
+
+.section {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 100%;
+    opacity: 0;
+    transition: all .6s;
+    padding: 0;
+    margin: 0;
+}
+
+.section--current {
+    left: 0;
+    opacity: 1;
+    transition: all .9s;
+    display: flex;
+    width: 100vw;
+}
+
+.main-section,
+.add-section,
+.settings-section {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+}
+
+.main__header,
+.add-section__header,
+.settings__header {
+    background-color: var(--primary-color--dark);
+    text-align: center;
+    color: white;
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+}
+
+.main__quantities,
+.add-section__quantities {
+    text-align: right;
+    color: var(--text-on-primary-color);
+    padding-right: 1rem;
+    font-size: 0.75rem;
+}
+
+.main__empty-message {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 15rem;
+    padding: 1rem;
+    border: 0;
+    border-left: 4px solid var(--secondary-color--dark);
+    background-color: var(--secondary-color);
+    color: var(--text-on-secondary-color);
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.main__empty-message button {
+    align-self: flex-end;
+}
+
+.main__add-Units,
+.add-section__add-Units {
+    align-self: flex-end;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem;
+    border: 0;
+    border-radius: 50%;
+    font-size: 2rem;
+    background-color: var(--secondary-color--dark);
+    color: var(--text-on-dark-secondary-color);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 999;
+}
+
+.add-section__controls {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    margin-top: 8rem;
+}
+
+.add-section__tab-controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.add-section__tab-controls button {
+    padding: 0.5rem;
+    border: 0;
+    background-color: var(--faded-background);
+    color: var(--text-on-faded-background);
+}
+
+.add-section__add-control-container {
+    align-self: stretch;
+}
+
+.add-section__add-control {
+    margin-top: 2rem;
+}
+
+.add-section__tab {
+    display: none;
+}
+
+.add-section__tab--current {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--faded-background);
+    padding-bottom: 1rem;
+    border: 2px solid var(--primary-color--light);
+}
+
+.add-section__tab--current select:nth-of-type(1) {
+    margin-bottom: 1rem;
+}
+
+.add-section__tab-control--current {
+    font-weight: bold;
+    background-color: var(--primary-color) !important;
+    padding: 0.8rem !important;
+    color: var(--text-on-primary-color) !important;
+}
+
+.main__empty-message button,
+.add-section__add-control,
+.settings__button {
+    border: 0;
+    width: 50%;
+    line-height: 2rem;
+    text-align: center;
+    color: var(--text-on-dark-secondary-color);
+    background-color: var(--secondary-color--dark);
+    border-radius: 4px;
+    padding: 0.25rem;
+    box-shadow: 0 4px 20px 5px rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.add-section__add-control {
+    margin-left: 25%;
+}
+
+.add-section input,
+.add-section select {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    width: 80%;
+}
+
+.add-section select:nth-of-type(2) {
+    width: 25%;
+}
+
+
+/*Progress Bars https://codepen.io/holdencreative/pen/pvxGxy */
+
+.progress {
+    position: relative;
+    height: 4px;
+    display: block;
+    width: 100%;
+    background-color: var(--primary-color--light);
+    border-radius: 2px;
+    background-clip: padding-box;
+    /*margin: 0.5rem 0 1rem 0;*/
+    overflow: hidden;
+}
+
+.progress .determinate {
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    bottom: 0;
+    background-color: var(--primary-color);
+    transition: width .3s linear;
+}
+
+.main__data-units,
+.add-section__data-units {
+    width: 95%;
+    margin: 0 auto;
+}
+.main__data-units{
+	margin-top: 8rem;
+}
+
+
+.invisible{
+	display: none;
+}

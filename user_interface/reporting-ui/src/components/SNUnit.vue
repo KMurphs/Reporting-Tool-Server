@@ -12,9 +12,9 @@
           <span class="data-unit__header-item data-unit__header-item--important">{{ sndata.sn }}</span>
           <span class="data-unit__header-item data-unit__Batch"><span class="data-unit__item--faded">Batch N°</span><span class="data-unit__header-item--important">{{ sndata.batchno }}</span></span>
           <span class="data-unit__control-container">
-            <span class="data-unit__header-item data-unit__motioned-control" v-on:click="$emit('unitErased', sndata.sn)"><i class="fas fa-trash-alt"></i></span>
-            <span class="data-unit__header-item data-unit__static-control" v-bind:id="'repStatus_' + sndata.sn"><i class="fas fa-file-signature"></i></span>
-            <span class="data-unit__header-item data-unit__static-control" v-bind:id="'dbStatus_' + sndata.sn"><i class="fas fa-database"></i></span>           
+            <span class="data-unit__header-item data-unit__motioned-control" v-on:click="onUnitErased()"><i class="fas fa-trash-alt"></i></span>
+            <span class="data-unit__header-item data-unit__static-control" v-bind:style="{backgroundColor: dbColors[status.dbStatus]}"><i class="fas fa-file-signature"></i></span>
+            <span class="data-unit__header-item data-unit__static-control" v-bind:style="{backgroundColor: repColors[status.repStatus]}"><i class="fas fa-database"></i></span>           
           </span>
         </div>
       </label>
@@ -53,10 +53,13 @@ export default {
     // client: String,
     // sessions: Array[String],
     sndata: Object,
+    status: Object
   },
   data: function () {
     return {
-      sessionsData: []
+      sessionsData: [],
+      dbColors: ['', '#849a92', '#3c9a77', '#006942'],
+      repColors: ['', '#d4b18e', '#b1793f', '#b35b00']
     }
   },
   created: function () {
@@ -72,8 +75,11 @@ export default {
     SNUnitSession,
   },
   methods: {
-    onSessionChanged: function (someSN, someSession) {
-      this.$emit('sessionChanged', someSN, someSession)
+    onSessionChanged: function (newSession) {
+      this.$emit('snunitmsg', 'sessionChanged', newSession)
+    },
+    onUnitErased: function () {
+      this.$emit('snunitmsg', 'unitErased', this.sndata.sn)
     }
   }
 };
