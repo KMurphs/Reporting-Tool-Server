@@ -1,16 +1,19 @@
 <template>
   <div class="unit-group-results-container">
-    <a href="#" v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor)+ ';'">
+    <a href="#" v-bind:style="'background-color: ' + (!configData.isPass ? configStyle.failPrimaryColor : configStyle.passPrimaryColor)+ ';'"
+                v-on:click="onClick">
       <span>
         <span class="unit-group-results__sn">
           <span>{{configData.sn}}</span>
         </span>
         <span class="unit-group-results__data">
+              <!-- v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'"> -->
+          <span>Click to Look at Results for Test Group</span>
           <span>{{configData.testgroup}}</span>
         </span>
         <span class="unit-group-results__motioned-control">
-          <span v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'">
-            {{configData.isPass ? 'PASS' : 'FAIL'}}
+          <span v-bind:style="'background-color: ' + (!configData.isPass ? configStyle.failDarkColor : configStyle.passDarkColor)+ ';'">
+            {{!configData.isPass ? 'FAIL' : 'PASS'}}
           </span>
         </span>
 
@@ -28,6 +31,7 @@ export default {
     props: {
         configData: Object,
         configStyle: Object,
+        name: String,
     },
     data: function () {
         return {
@@ -37,6 +41,9 @@ export default {
     created: function () {
     },
     methods: {
+      onClick: function(){
+        this.$emit('msg', this.name, this.configData.testgroup)
+      }
     },
 };
 </script>
@@ -52,7 +59,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
-  margin: 1rem auto;
+  margin: .2rem auto;
   width: 98%;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -104,5 +111,21 @@ export default {
 }
 .unit-group-results-container > a > span > span > span {
   padding: 1.5rem 1rem;
+}
+
+.unit-group-results__data{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.unit-group-results__data > span:first-child{
+  margin: 0;
+  padding: 0;
+  color: gray;
+  margin-top: 0.5rem;
+}
+.unit-group-results__data > span:nth-child(2){
+  padding: 0.5rem 1rem !important;
 }
 </style>

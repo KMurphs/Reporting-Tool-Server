@@ -6,6 +6,34 @@ exports.currentApiVersion = "v1";
 const logger = require("../../common/config/winston.config.js").getLogger();
 
 
+exports.getOneUnitInstanceResults = function(req, res){
+    
+    let snSessions = [];
+    logger.debug(logger.createEntry("data.controller.one.result.instances", "Get Units Results for Test Isntances", `Retrieving detailed results for units with sn ${req.params.id} and test instances ${req.query.inst ? req.query.inst.split(",") : []}`));
+
+    dataModel.getUnitsHistory([req.params.id]).then((data)=>{
+
+        for(item in data){
+            snSessions.push(data[item].TestSum_ID);
+        }
+
+        logger.trace(logger.createEntry("data.controller.one.result.instances", "Got unit's ID", `Retrieved database id for units with sn ${req.params.id} - id ${JSON.stringify(snSessions[0])}`));
+        
+        dataModel.getUnitsInstanceResults(snSessions[0], req.query.inst ? req.query.inst.split(",") : []).then((data)=>{
+
+            logger.trace(logger.createEntry("data.controller.one.result.instances", "units results were succesffuly fetched from db", res.locals.reqData));
+            res.locals.resData.data = data;
+            res.status(200).json(res.locals.resData);
+        }).catch((reason)=>{
+            logger.error(logger.createEntry("data.controller.one.result.instances", "REsults Fetch Failed", `${reason}`));
+            res.locals.resData.data = 'Data Fetch Failed';
+            res.status(500).json(res.locals.resData);
+        })
+    
+    })
+
+}
+
 
 exports.getOneUnitResults = function(req, res) {
     

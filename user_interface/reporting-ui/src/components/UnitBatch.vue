@@ -3,16 +3,19 @@
     <a href="#" v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor)+ ';'"
                 v-on:click="onUnitSelected()">
       <span>
-        <span class="unit-group-results__sn">
+        <span>
           <span>{{configData.sn}}</span>
         </span>
-        <span class="unit-group-results__motioned-control">
+        <span>
           <span v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'">
             {{configData.isPass ? 'PASS' : 'FAIL'}}
           </span>
+          <span v-bind:style="'background-color: ' + (configData.client == 'Periseo' ? configStyle.normalClientColor : configStyle.fieldClientColor) + ';'">
+                {{configData.client}}
+          </span>
         </span>
         <span class="unit-group-results__data">
-          <span v-bind:style="'width: calc(100% / ' + configData.data.length + '); background-color: ' + (item.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor) + ';'"
+          <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor) + ';'"
                 v-for="(item, index) in configData.data" 
                 v-bind:key="index">
                 {{item.content}}
@@ -98,17 +101,22 @@ export default {
 }
 .unit-group-results-container > a > span > span:last-child {
   transition: all .6s;
-  margin-right: -30rem;
+  margin-right: -15rem;
   opacity: 0;
-  color: #666;
+  color: #1f196b;
+  font-weight: bold;
 }
 .unit-group-results-container > a > span > span:nth-child(2) {
   color: white;
+}
+.unit-group-results-container > a > span > span:nth-child(2) > span:last-child {
+  color: black;
 }
 .unit-group-results-container > a:hover > span > span:last-child {
   transition: all .6s;
   margin-right: 0;
   opacity: 1;
+  /* border: 1px solid black; */
 }
 .unit-group-results-container > a > span > span > span {
   padding: 1rem 1.5rem;
@@ -126,6 +134,12 @@ export default {
   align-items: center;
   /* color: white; */
 }
+/* .unit-group-results__data > span:last-child{
+  margin-left: 1.5rem;
+} */
+/* .unit-group-results__data > span:nth-last-child(2){
+  border-right: 1px solid;
+} */
 
 
 </style>

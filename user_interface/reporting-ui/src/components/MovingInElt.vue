@@ -29,16 +29,16 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 .moving-in-container{
-    position: relative;
+    position: absolute;
     opacity: 0;
     left: 100vw;
     transition: all .6s;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
 }
 .visible{
     opacity: 1;

@@ -5,6 +5,9 @@ exports.processRequest = function(app) {
     app.get("/api/" + app.apiVersion + "/data/unitresults/:id", [
         dataController.getOneUnitResults
     ])
+    app.get("/api/" + app.apiVersion + "/data/unitresults/:id/instances/", [
+        dataController.getOneUnitInstanceResults
+    ])
     app.get("/api/" + app.apiVersion + "/data/unitsummary/:id", [
         dataController.getOneUnitSummary
     ])

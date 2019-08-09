@@ -10,12 +10,51 @@ const pool = mysql.createPool({
     database: config.msqlDatabase
 });
 
+exports.getUnitsInstanceResults = function(snSession, instances){
 
+    //Query string template for database use. Note the placeholders (e.g xxTSIDxx) thta must be replaced by actual values before, the query can be used
+    const aQuerystring = "SELECT CONCAT(test_results_table.Board_TestInstance, ':: ', test_results_table.Table_ID) as itemID, \
+                            test_results_table.Table_ID, test_results_table.Board_TestInstance, test_results_table.Test_TimeStamp, \
+                            test_results_table.Test_Description, test_results_table.UUT_Configuration, test_results_table.TestBench_Configuration, test_results_table.Pass_Fail,\
+                            test_results_table.LL_Extended, test_results_table.Lower_Limit, Measurement, test_results_table.Upper_Limit, test_results_table.UL_Extended, \
+                            test_results_table.SI_Unit, test_results_table.Comments, test_results_table.Admin_Comments, \
+                            CONCAT(test_summary_extended_table.Temperature_Status, ': ',test_summary_extended_table.TestSequence_Group, ': ', test_summary_extended_table.TestSequence_Description) as reportsection \
+                    FROM test_schema.test_results_table \
+                    JOIN test_schema.test_summary_extended_table\
+                    ON (test_results_table.Board_TestInstance = test_summary_extended_table.Board_TestInstance AND test_results_table.Test_Summary_ID = test_summary_extended_table.Test_Summary_ID)\
+                    WHERE test_results_table.Board_TestInstance in (xxBTINxx) \
+                    AND test_results_table.Test_Summary_ID = xxTSIDxx \
+                    ORDER by Table_ID;";
+
+    
+    //Collecting an array of promises. One for each unit
+    snPromises = [];
+    for(const item in instances){
+        snPromises.push(queryDB(aQuerystring.replace(new RegExp("xxTSIDxx", "g"), snSession)
+                                            .replace(new RegExp("xxBTINxx", "g"), instances[item])))
+    }   
+    
+
+    return new Promise(function(resolve, reject){
+        //Awaiting the resolution of every unit in the array of promises and collecting data
+        Promise.all(snPromises).then((unitsData)=>{
+        
+            let data = {}
+            for(const idx in unitsData){
+                data[instances[idx]] = unitsData[idx];
+            }
+            resolve(data)
+
+        })        
+    })
+
+}
 
 exports.getUnitsResults = function(snSessions) {
 
     //Query string template for database use. Note the placeholders (e.g xxTSIDxx) thta must be replaced by actual values before, the query can be used
-    const aQuerystring = "SELECT test_results_table.Table_ID, test_results_table.Board_TestInstance, test_results_table.Test_TimeStamp, \
+    const aQuerystring = "SELECT CONCAT(test_results_table.Board_TestInstance, ':: ', test_results_table.Table_ID) as itemID, \
+                            test_results_table.Table_ID, test_results_table.Board_TestInstance, test_results_table.Test_TimeStamp, \
                             test_results_table.Test_Description, test_results_table.UUT_Configuration, test_results_table.TestBench_Configuration, test_results_table.Pass_Fail,\
                             test_results_table.LL_Extended, test_results_table.Lower_Limit, Measurement, test_results_table.Upper_Limit, test_results_table.UL_Extended, \
                             test_results_table.SI_Unit, test_results_table.Comments, test_results_table.Admin_Comments, \
@@ -56,7 +95,7 @@ exports.getUnitsResults = function(snSessions) {
 exports.getUnitsSummaries = function(snSessions) {
 
     //Query string template for database use. Note the placeholders (e.g xxTSIDxx) thta must be replaced by actual values before, the query can be used
-    const aQuerystring = "SELECT CONCAT(Temperature_Status, ': ',TestSequence_Group, ': ', TestSequence_Description, ': ', Board_TestInstance) as itemID, \
+    const aQuerystring = "SELECT CONCAT(Temperature_Status, ': ',TestSequence_Group, ': ', TestSequence_Description, ':: ', Board_TestInstance) as itemID, \
                             Serial_Number, Test_Summary_ID, \
                             Temperature_Status, TestSequence_Group, TestSequence_Description, \
                             CONCAT(Temperature_Status, ': ',TestSequence_Group, ': ', TestSequence_Description) as reportsection, \
