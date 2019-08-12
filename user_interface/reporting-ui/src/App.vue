@@ -9,13 +9,15 @@
         <h1>Tracked Devices</h1>
       </div>
 
-      <div class="container__message-when-empty" v-bind:style="'display: ' + (trackedUnits.length == 0 ? 'block' : 'none')">
+      <div class="container__message-when-empty"
+           v-bind:style="'display: ' + (trackedUnits.length === 0 ? 'block' : 'none')">
         <h2>Click Here To add a device to track</h2>
         <button v-on:click="addUnits(true)"><i class="fas fa-plus"></i>Add Units to Track</button>
       </div>
 
-      <div class="container__tracked-units" v-bind:style="'display: ' + (trackedUnits.length != 0 ? 'block' : 'none')">
-        <UnitBatch v-bind:configData="item" 
+      <div class="container__tracked-units"
+           v-bind:style="'display: ' + (trackedUnits.length !==0 ? 'block' : 'none')">
+        <UnitBatch v-bind:configData="item"
                    v-bind:configStyle="configStyle"
                    v-on:snunitbatchmsg="onSNSelected"
                    v-for="(item, index) in trackedUnitsData"
@@ -28,7 +30,7 @@
       <div></div>
 
       <div id="container__add-units-control" v-bind:style="'z-index: ' + (isAdding ? 0 : -1)"> ;
-        <MovingInElt 
+        <MovingInElt
                       v-bind:isVisible="isAdding"
                       v-bind:configStyle="{
                         'height': '300px',
@@ -46,17 +48,16 @@
       </div>
 
 
-
-    </div>  
+    </div>
 
     <div class="container container__details">
       <div class="device-details-title">
         <i class="fas fa-info-circle"></i>
         <!-- <input type="text" placeholder="Enter Serial Number"> -->
         <InputAutoComplete v-on:msg="onSNSelected"
-                           v-bind:configData="sns" 
+                           v-bind:configData="sns"
                            v-bind:configStyle="{
-                              'placeholder': 'Enter Serial Number',              
+                              'placeholder': 'Enter Serial Number',
                               'font-size': '2rem',
                               'font-weight': 'bold',
                               'text-align': 'center',
@@ -75,92 +76,90 @@
         <div><span>ID: </span><span>{{currentUnit.TestSum_ID}}</span></div>
         <div><span>Batch No: </span><span>{{currentUnit.Batch_ID}}</span></div>
         <div><span>Client: </span><span>{{currentUnit.Client_Name}}</span></div>
-        <div><span>Project Code: </span><span>{{currentUnit.Project_Code != '' ? currentUnit.Project_Code + ' (' + currentUnit.Product_Description + ')' : ''}}</span></div>
-        <div v-bind:class="{'status-pass': (currentUnit.Final_Pass_Fail != 'FAIL'),
-                            'status-fail': (currentUnit.Final_Pass_Fail == 'FAIL') }">
+        <div><span>Project Code: </span>
+          <span>{{currentUnit.Project_Code !==''
+                ? currentUnit.Project_Code + ' (' + currentUnit.Product_Description + ')'
+                : ''}}
+          </span>
+        </div>
+        <div v-bind:class="{'status-pass': (currentUnit.Final_Pass_Fail !=='FAIL'),
+                            'status-fail': (currentUnit.Final_Pass_Fail === 'FAIL') }">
           <span>Status: </span><span>{{currentUnit.Final_Pass_Fail}}</span>
         </div>
       </div>
       <div class="unit-details-data">
-        <a href="#" class="fa-long-arrow-alt-left-container" v-on:click="previousDetails()"><i class="fas fa-long-arrow-alt-left"></i></a>
+        <a href="#" class="fa-long-arrow-alt-left-container"
+                    v-on:click="previousDetails()">
+          <i class="fas fa-long-arrow-alt-left"></i>
+        </a>
 
-        <MovingInElt 
-                      v-bind:isVisible="groupData.currentView == 1"
+        <MovingInElt
+                      v-bind:isVisible="groupData.currentView === 1"
                       v-bind:configStyle="configStyleCont">
           <UnitGroupResults v-for="(item, index) in groupData.batchResults"
                             v-on:msg="onGroupResultsSelected"
                             v-bind:key="index"
                             v-bind:name="'batchResults'"
-                            v-bind:configData="item" 
+                            v-bind:configData="item"
                             v-bind:configStyle="configStyle">
           </UnitGroupResults>
         </MovingInElt>
-        <MovingInElt 
-                      v-bind:isVisible="groupData.currentView == 2"
+        <MovingInElt
+                      v-bind:isVisible="groupData.currentView === 2"
                       v-bind:configStyle="configStyleCont">
           <UnitGroupResults v-for="(item, index) in groupData.summaryGroups"
                             v-on:msg="onGroupResultsSelected"
                             v-bind:key="index"
                             v-bind:name="'summaryGroups'"
-                            v-bind:configData="item" 
+                            v-bind:configData="item"
                             v-bind:configStyle="configStyle">
           </UnitGroupResults>
         </MovingInElt>
-        <MovingInElt 
-                      v-bind:isVisible="groupData.currentView == 3"
+        <MovingInElt
+                      v-bind:isVisible="groupData.currentView === 3"
                       v-bind:configStyle="configStyleCont">
           <UnitGroupResults v-for="(item, index) in groupData.summaryItems"
                             v-on:msg="onGroupResultsSelected"
                             v-bind:key="index"
                             v-bind:name="'summaryItems'"
-                            v-bind:configData="item" 
+                            v-bind:configData="item"
                             v-bind:configStyle="configStyle">
           </UnitGroupResults>
         </MovingInElt>
-        <MovingInElt 
-                      v-bind:isVisible="groupData.currentView == 4"
+        <MovingInElt
+                      v-bind:isVisible="groupData.currentView === 4"
                       v-bind:configStyle="configStyleCont">
           <UnitGroupResults v-for="(item, index) in groupData.detailedResults"
                             v-on:msg="onGroupResultsSelected"
                             v-bind:key="index"
                             v-bind:name="'detailedResults'"
-                            v-bind:configData="item" 
+                            v-bind:configData="item"
                             v-bind:configStyle="configStyle">
           </UnitGroupResults>
         </MovingInElt>
-        <MovingInElt 
-                      v-bind:isVisible="groupData.currentView == 5"
+        <MovingInElt
+                      v-bind:isVisible="groupData.currentView === 5"
                       v-bind:configStyle="configStyleCont">
           <UnitGroupResults v-for="(item, index) in groupData.resultSet"
                             v-on:msg="onGroupResultsSelected"
                             v-bind:key="index"
                             v-bind:name="'resultSet'"
-                            v-bind:configData="item" 
+                            v-bind:configData="item"
                             v-bind:configStyle="configStyle">
           </UnitGroupResults>
         </MovingInElt>
       </div>
-    </div>  
+    </div>
 
 
-
-
-    <a href="#" class="fa-plus-container" v-bind:style="'display: ' + (!isAdding ? 'inline-block' : 'none')" v-on:click="addUnits(true)"><i class="fas fa-plus"></i></a>
-    <a href="#" class="fa-check-container" v-bind:style="'display: ' + (isAdding ? 'inline-block' : 'none')" v-on:click="addUnits(false)"><i class="fas fa-check"></i></a>
+    <a href="#" class="fa-plus-container"
+        v-bind:style="'display: ' + (!isAdding ? 'inline-block' : 'none')"
+        v-on:click="addUnits(true)"><i class="fas fa-plus"></i></a>
+    <a href="#" class="fa-check-container"
+        v-bind:style="'display: ' + (isAdding ? 'inline-block' : 'none')"
+        v-on:click="addUnits(false)"><i class="fas fa-check"></i></a>
   </div>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <script>
@@ -177,9 +176,9 @@ export default {
     UnitGroupResults,
     UnitBatch,
     SNUnitSelect,
-    InputAutoComplete
+    InputAutoComplete,
   },
-  data: function () {
+  data() {
     return {
       projectcode_batch: {},
       historyResults: {},
@@ -195,19 +194,19 @@ export default {
       isAdding: false,
       isVisible: true,
       configData: {
-        'sn': '145130001',
-        'isPass': true,
-        'client': 'Periseo',
-        'data': [{
-          'content': 'Ambient',
-          'isPass': true,
-        },{
-          'content': 'Cold',
-          'isPass': false,
-        },{
-          'content': 'Hot',
-          'isPass': true,
-        }]
+        sn: '145130001',
+        isPass: true,
+        client: 'Periseo',
+        data: [{
+          content: 'Ambient',
+          isPass: true,
+        }, {
+          content: 'Cold',
+          isPass: false,
+        }, {
+          content: 'Hot',
+          isPass: true,
+        }],
       },
       groupData: {
         currentView: 1,
@@ -219,362 +218,360 @@ export default {
         resultSet: {},
       },
       configStyle: {
-        'passPrimaryColor': 'hsl(120,45%,70%)',
-        'passDarkColor': 'hsl(120,55%,35%)',
-        'failPrimaryColor': 'hsl(0,45%,70%)',
-        'failDarkColor': 'hsl(0,55%,35%)',
-        'normalClientColor': 'rgb(214, 198, 174)',
-        'fieldClientColor': 'rgb(214, 198, 174)',
+        passPrimaryColor: 'hsl(120,45%,70%)',
+        passDarkColor: 'hsl(120,55%,35%)',
+        failPrimaryColor: 'hsl(0,45%,70%)',
+        failDarkColor: 'hsl(0,55%,35%)',
+        normalClientColor: 'rgb(214, 198, 174)',
+        fieldClientColor: 'rgb(214, 198, 174)',
       },
       configStyleCont: {
-        'height': 'calc(100% - 4rem)',
+        height: 'calc(100% - 4rem)',
         'background-color': 'rgba(0,0,0,0)',
-        'width': '100%',
+        width: '100%',
         'margin-top': '4rem',
         'overflow-y': 'scroll',
       },
-    }
+    };
   },
   methods: {
-    onTrackNewUnits: function(msgType, data){
+    onTrackNewUnits(msgType, data) {
       // {"sn":"","projectcode":"14511","batchno":0}
 
-      if(data.sn != ''){
-        if(this.trackedUnits.indexOf(data.sn) == -1){
-          this.trackedUnits.push(data.sn)
+      if (data.sn !== '') {
+        if (this.trackedUnits.indexOf(data.sn) === -1) {
+          this.trackedUnits.push(data.sn);
         }
       }
-      if(data.projectcode != '' && data.batchno != ''){
-        for(const key in this.batchResults){
-          if(this.historyResults[key].Project_Code == data.projectcode && this.historyResults[key].Batch_ID == data.batchno){
-            if(this.trackedUnits.indexOf(this.batchResults[key].Serial_Number) == -1){
-              this.trackedUnits.push(this.batchResults[key].Serial_Number)
+      if (data.projectcode !== '' && data.batchno !== '') {
+        for (const key in this.batchResults) {
+          if (this.historyResults[key].Project_Code === data.projectcode
+              && this.historyResults[key].Batch_ID === data.batchno) {
+            if (this.trackedUnits.indexOf(this.batchResults[key].Serial_Number) === -1) {
+              this.trackedUnits.push(this.batchResults[key].Serial_Number);
             }
           }
         }
       }
-
     },
-    addUnits: function(doStart){
+    addUnits(doStart) {
       this.isAdding = doStart;
-      console.log(this.isAdding)
-      if(this.isAdding){
-
-      }else{
-
-      }
+      console.log(this.isAdding);
     },
 
-    onSNSelected: function(msgType, data){
-      if(msgType == 'snselected' || msgType == 'unitselected'){
-  
-        let temp = [];
-        for(const key in this.historyResults){
-          if(this.historyResults[key].Serial_Number == data){
-            temp.push(key)
+    onSNSelected(msgType, data) {
+      if (msgType === 'snselected' || msgType === 'unitselected') {
+        const temp = [];
+        for (const key in this.historyResults) {
+          if (this.historyResults[key].Serial_Number === data) {
+            temp.push(key);
           }
         }
         this.updateDetailsPage(temp[0]);
       }
     },
-    updateDetailsPage: function(unitID){ 
-      
+    updateDetailsPage(unitID) {
+      this.currentUnit = this.batchResults[unitID];
 
-      this.currentUnit = this.batchResults[unitID]
+      this.getData(`http://localhost:5001/api/v1/data/unitsummary/\
+      ${this.currentUnit.Serial_Number}`)
+        .then((res) => {
+          this.currentUnit.summary = res.data[unitID];
 
-      this.getData("http://localhost:5001/api/v1/data/unitsummary/" + this.currentUnit.Serial_Number)
-      .then((res)=>{ 
-        this.currentUnit['summary'] = res.data[unitID];
+          let instances = '';
+          for (const key in this.currentUnit.summary) {
+            instances += `,${key.split(':: ')[1]}`;
+          }
 
-        let instances = '';
-        for(const key in this.currentUnit['summary']){
-          instances += ',' + key.split(':: ')[1];
-        }
-        
-        this.getData("http://localhost:5001/api/v1/data/unitresults/" + this.currentUnit.Serial_Number + "/?inst=" + instances.substr(1))
-        .then((res)=>{ this.currentUnit['results'] = res.data[unitID] }); 
-      }); 
+          this.getData(`http://localhost:5001/api/v1/data/unitresults/\
+          ${this.currentUnit.Serial_Number}/?inst=${instances.substr(1)}`)
+            .then((res1) => { this.currentUnit.results = res1.data[unitID]; });
+        });
 
-      this.currentUnit['Product_Description'] = this.historyResults[unitID].Product_Description;
-      this.currentUnit['Project_Code'] = this.historyResults[unitID].Project_Code;
-      this.currentUnit['Batch_ID'] = this.historyResults[unitID].Batch_ID;
+      this.currentUnit.Product_Description = this.historyResults[unitID].Product_Description;
+      this.currentUnit.Project_Code = this.historyResults[unitID].Project_Code;
+      this.currentUnit.Batch_ID = this.historyResults[unitID].Batch_ID;
 
-      this.groupData['batchResults'] = []
-      for(const item of ['Ambient','Cold','Hot']){
-        this.groupData['batchResults'].push({
-          'sn': this.currentUnit.Serial_Number,
-          'isPass': this.currentUnit[item] != 'FAIL',
-          'testgroup': item
-        })
+      this.groupData.batchResults = [];
+      for (const item of ['Ambient', 'Cold', 'Hot']) {
+        this.groupData.batchResults.push({
+          sn: this.currentUnit.Serial_Number,
+          isPass: this.currentUnit[item] !== 'FAIL',
+          testgroup: item,
+        });
       }
       this.groupData.currentView = 1;
     },
-    onGroupResultsSelected: function(container, data){
-      if(container == 'batchResults'){
-        this.groupData.summaryGroups = this.setupSummaryGroups(this.currentUnit, 'summary', 1, data)
+    onGroupResultsSelected(container, data) {
+      if (container === 'batchResults') {
+        this.groupData.summaryGroups = this.setupSummaryGroups(this.currentUnit, 'summary', 1, data);
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 2;
-      } else if(container == 'summaryGroups'){
-        this.groupData.summaryItems = this.setupSummaryGroups(this.currentUnit, 'summary', 2, data)
+      } else if (container === 'summaryGroups') {
+        this.groupData.summaryItems = this.setupSummaryGroups(this.currentUnit, 'summary', 2, data);
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 3;
-      } else if(container == 'summaryItems'){     
-
+      } else if (container === 'summaryItems') {
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
 
-        for(const key in this.currentUnit['summary']){
-          let tempKey = key.split(':: ');
+        for (const key in this.currentUnit.summary) {
+          const tempKey = key.split(':: ');
 
-          if(tempKey[0] == this.groupData.selectionHistory.join(': ')){
-            this.currentUnit['currentInstance'] = tempKey[1];
+          if (tempKey[0] === this.groupData.selectionHistory.join(': ')) {
+            this.currentUnit.currentInstance = tempKey[1];
             break;
           }
         }
 
-        this.groupData.detailedResults = this.setupResultsGroups(this.currentUnit, 'results', this.currentUnit['currentInstance'], this.groupData.selectionHistory.join(': '))
+        this.groupData.detailedResults = this.setupResultsGroups(this.currentUnit,
+          'results',
+          this.currentUnit.currentInstance,
+          this.groupData.selectionHistory.join(': '));
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 4;
-      } else if(container == 'detailedResults'){     
+      } else if (container === 'detailedResults') {
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
 
-        this.groupData.resultSet = this.setupResultsItems(this.currentUnit, 'results', this.currentUnit['currentInstance'], this.groupData.selectionHistory[this.groupData.currentView - 1])
+        this.groupData.resultSet = this.setupResultsItems(this.currentUnit,
+          'results',
+          this.currentUnit.currentInstance,
+          this.groupData.selectionHistory[this.groupData.currentView - 1]);
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 5;
       }
-
     },
-    setupSummaryGroups: function(currentUnit, rawDataKey, tokenKeyIndex, parentGroup){
+    setupSummaryGroups(currentUnit, rawDataKey, tokenKeyIndex, parentGroup) {
+      const uiData = [];
+      for (const key in currentUnit[rawDataKey]) {
+        let isAllowedToProceed = true;
+        if (parentGroup !== (key.split(':: ')[0]).split(': ')[tokenKeyIndex - 1]) {
+          // continue;
+          isAllowedToProceed = false;
+        }
 
-        let uiData = [];
-        for(const key in currentUnit[rawDataKey]){
+        if (isAllowedToProceed) {
+          const item = (key.split(':: ')[0]).split(': ')[tokenKeyIndex];
 
-          // if(parentGroup != (key.split(':: ')[0]).split(': ')[(tokenKeyIndex - 1 >= 0 ? tokenKeyIndex - 1 : 0)]){
-          if(parentGroup != (key.split(':: ')[0]).split(': ')[tokenKeyIndex - 1]){
-            continue;
-          }
-
-          let item = (key.split(':: ')[0]).split(': ')[tokenKeyIndex]
-          
           let isPresent = false;
-          for(const elemt of uiData){
-            if(elemt.testgroup == item){
+          for (const elemt of uiData) {
+            if (elemt.testgroup === item) {
               isPresent = true;
               break;
             }
           }
 
-          if(!isPresent){
+          if (!isPresent) {
             uiData.push({
-              'sn': currentUnit.Serial_Number,
-              'isPass': currentUnit[rawDataKey][key].TestSequence_Group_Pass_Fail != 'FAIL',
-              'testgroup': item
-            })
+              sn: currentUnit.Serial_Number,
+              isPass: currentUnit[rawDataKey][key].TestSequence_Group_Pass_Fail !== 'FAIL',
+              testgroup: item,
+            });
           }
-          
         }
+      }
       return uiData;
     },
-    setupResultsGroups: function(currentUnit, rawDataKey, instance){
+    setupResultsGroups(currentUnit, rawDataKey, instance) {
+      const uiData = [];
+      let isAllowedToProceed = true;
 
-        let uiData = [];
-        for(const key in currentUnit[rawDataKey]){
+      for (const key in currentUnit[rawDataKey]) {
+        if (instance !== (key.split(':: ')[0])) {
+          // continue;
+          isAllowedToProceed = false;
+        }
 
-          if(instance != (key.split(':: ')[0])){
-            continue;
-          }
+        if (isAllowedToProceed) {
+          const item = currentUnit[rawDataKey][key].Test_Description;
 
-          let item = currentUnit[rawDataKey][key]['Test_Description']
-          
           let isPresent = false;
-          for(const elemt of uiData){
-            if(elemt.testgroup == item){
+          for (const elemt of uiData) {
+            if (elemt.testgroup === item) {
               isPresent = true;
               break;
             }
           }
 
-          if(!isPresent){
+          if (!isPresent) {
             uiData.push({
-              'sn': currentUnit.Serial_Number,
-              'isPass': currentUnit[rawDataKey][key].Pass_Fail != 'FAIL',
-              'testgroup': item
-            })
+              sn: currentUnit.Serial_Number,
+              isPass: currentUnit[rawDataKey][key].Pass_Fail !== 'FAIL',
+              testgroup: item,
+            });
           }
-          
         }
+      }
       return uiData;
     },
-    setupResultsItems: function(currentUnit, rawDataKey, instance, testDescription){
+    setupResultsItems(currentUnit, rawDataKey, instance, testDescription) {
+      const uiData = [];
+      const titles = {
+        Test_TimeStamp: 'Test Time',
+        Test_Description: 'Test Description',
+        UUT_Configuration: 'UUT Configuration',
+        TestBench_Configuration: 'TestBench Configuration',
+        Pass_Fail: 'Pass/Fail',
+        LL_Extended: 'Extended Lower Limit',
+        Lower_Limit: 'Lower Limit',
+        Measurement: 'Measurment',
+        Upper_Limit: 'Upper Limit',
+        UL_Extended: 'Extended Upper Limit',
+        SI_Unit: 'Measurements Units (SI)',
+        Comments: 'Comments',
+        Admin_Comments: 'Admin_Comments',
+        reportsection: 'Test Item Context',
+      };
+      for (const key in currentUnit[rawDataKey]) {
+        let isAllowedToContinue = true;
 
-        let uiData = [];
-        let titles = {
-                "Test_TimeStamp": "Test Time",
-                "Test_Description": "Test Description",
-                "UUT_Configuration": "UUT Configuration",
-                "TestBench_Configuration": "TestBench Configuration",
-                "Pass_Fail": "Pass/Fail",
-                "LL_Extended": 'Extended Lower Limit',
-                "Lower_Limit": 'Lower Limit',
-                "Measurement": 'Measurment',
-                "Upper_Limit": 'Upper Limit',
-                "UL_Extended": 'Extended Upper Limit',
-                "SI_Unit": "Measurements Units (SI)",
-                "Comments": "Comments",
-                "Admin_Comments": "Admin_Comments",
-                "reportsection": "Test Item Context",
+        if (instance !== (key.split(':: ')[0])) {
+          // continue;
+          isAllowedToContinue = false;
         }
-        for(const key in currentUnit[rawDataKey]){
 
-          if(instance != (key.split(':: ')[0])){
-            continue;
-          }
+        if (testDescription !== currentUnit[rawDataKey][key].Test_Description) {
+          isAllowedToContinue = false;
+          // continue;
+        }
 
-          if(testDescription != currentUnit[rawDataKey][key]['Test_Description']){
-            continue;
-          }
+        if (isAllowedToContinue) {
+          const item = {
+            sn: currentUnit.Serial_Number,
+            isPass: currentUnit[rawDataKey][key].Pass_Fail !== 'FAIL',
+            testgroup: '',
+          };
 
-          let item = {
-              'sn': currentUnit.Serial_Number,
-              'isPass': currentUnit[rawDataKey][key].Pass_Fail != 'FAIL',
-              'testgroup': ''
+
+          // for (const tempKey in currentUnit[rawDataKey][key]) {
+          Object.keys(currentUnit[rawDataKey][key]).forEach((tempKey) => {
+            let isAllowedToContinueAgain = true;
+
+            if (['itemID', 'Table_ID', 'Board_TestInstance'].indexOf(tempKey) !== -1) {
+              // continue;
+              isAllowedToContinueAgain = false;
             }
-          
-          for(let tempKey in currentUnit[rawDataKey][key]){
-            if(['itemID', 'Table_ID', 'Board_TestInstance'].indexOf(tempKey) != -1)
-              continue;
 
-            let temp = JSON.parse(JSON.stringify(item))
-            temp.testgroup = titles[tempKey] + ': ' + currentUnit[rawDataKey][key][tempKey]
-            uiData.push(temp)
-          }
+            if (isAllowedToContinueAgain) {
+              const temp = JSON.parse(JSON.stringify(item));
+              temp.testgroup = `${titles[tempKey]}: ${currentUnit[rawDataKey][key][tempKey]}`;
+              uiData.push(temp);
+            }
+          });
 
 
-            return uiData;
+          return uiData;
         }
+      }
+      return uiData;
     },
 
-    previousDetails: function(){
-      this.groupData.currentView--;
-      if(this.groupData.currentView == 0){
+    previousDetails() {
+      this.groupData.currentView -= 1;
+      if (this.groupData.currentView === 0) {
         this.groupData.currentView = 1;
       }
     },
 
-    updateDetails: function(){
-      if(this.trackedUnits.length > 0){
+    updateDetails() {
+      if (this.trackedUnits.length > 0) {
         this.trackedUnits.sort();
         this.trackedUnitsData = [];
 
-        for(const sn of this.trackedUnits){
-            const key = this.snsids[sn]
+        // for (const sn of this.trackedUnits) {
+        this.trackedUnits.forEach((sn) => {
+          const key = this.snsids[sn];
 
-            if(this.trackedUnits.indexOf(sn) != -1){
-              
-              
-                this.trackedUnitsData.push({
-                  'sn': sn + '',
-                  'isPass': this.batchResults[key].Final_Pass_Fail != 'FAIL',
-                  'client': this.batchResults[key].Client_Name,
-                  'data': [{
-                    'content': 'Ambient',
-                    'isPass': this.batchResults[key].Ambient != 'FAIL',
-                  },{
-                    'content': 'Cold',
-                    'isPass': this.batchResults[key].Cold != 'FAIL',
-                  },{
-                    'content': 'Hot',
-                    'isPass': this.batchResults[key].Hot != 'FAIL',
-                  }]
-                })
-
-            }
-        }
+          if (this.trackedUnits.indexOf(sn) !== -1) {
+            this.trackedUnitsData.push({
+              sn: `${sn}`,
+              isPass: this.batchResults[key].Final_Pass_Fail !== 'FAIL',
+              client: this.batchResults[key].Client_Name,
+              data: [{
+                content: 'Ambient',
+                isPass: this.batchResults[key].Ambient !== 'FAIL',
+              }, {
+                content: 'Cold',
+                isPass: this.batchResults[key].Cold !== 'FAIL',
+              }, {
+                content: 'Hot',
+                isPass: this.batchResults[key].Hot !== 'FAIL',
+              }],
+            });
+          }
+        });
       }
-
     },
 
 
-    getUpdatedData: function(){
-      this.getData("http://localhost:5001/api/v1/data/batch")
-      .then((res)=>{ 
-        this.batchResults = res.data; 
-        this.updateDetails();
-        console.log('Updated Data fetched!')
+    getUpdatedData() {
+      this.getData('http://localhost:5001/api/v1/data/batch')
+        .then((res) => {
+          this.batchResults = res.data;
+          this.updateDetails();
+          console.log('Updated Data fetched!');
+        });
+    },
+
+
+    getData(url) {
+      return new Promise((resolve) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = () => {
+          if (this.readyState === 4 && this.status === 200) {
+            resolve(JSON.parse(this.responseText));
+          }
+        };
+        xhttp.open('GET', url, true);
+        xhttp.send();
       });
     },
 
 
-    getData: function(url) {
+  },
+  created() {
+    this.getData('http://localhost:5001/api/v1/data/units')
+      .then((res) => {
+        this.historyResults = res.data;
+        this.snsids = {};
+        // for (const key in this.historyResults) {
+        Object.keys(this.historyResults).forEach((key) => {
+          this.historyResults[key].Serial_Number = `${this.historyResults[key].Serial_Number}`;
+          this.sns.push(this.historyResults[key].Serial_Number);
+          this.snsids[this.historyResults[key].Serial_Number] = key;
+        });
 
-      return new Promise((resolve, reject) => {
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            resolve(JSON.parse(this.responseText));
+        this.projectcode_batch = {};
+        // for (const key in this.historyResults) {
+        Object.keys(this.historyResults).forEach((key) => {
+          this.historyResults[key].Project_Code = `${this.historyResults[key].Project_Code}`;
+          this.historyResults[key].Batch_ID = `${this.historyResults[key].Batch_ID}`;
+
+          if (Object.keys(this.projectcode_batch)
+            .indexOf(this.historyResults[key].Project_Code) === -1) {
+            this.projectcode_batch[this.historyResults[key].Project_Code] = {
+              batches: [],
+              description: this.historyResults[key].Product_Description,
+            };
           }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
-      })                        
-    },
 
-    
+          if (this.projectcode_batch[this.historyResults[key].Project_Code]
+            .batches.indexOf(this.historyResults[key].Batch_ID) === -1) {
+            this.projectcode_batch[this.historyResults[key].Project_Code]
+              .batches.push(this.historyResults[key].Batch_ID);
 
-  }, 
-  created: function(){
-
-    this.getData("http://localhost:5001/api/v1/data/units")
-    .then((res)=>{
-      this.historyResults = res.data;
-      this.snsids = {};
-      for(const key in this.historyResults){
-        this.historyResults[key].Serial_Number = this.historyResults[key].Serial_Number + '';
-        this.sns.push(this.historyResults[key].Serial_Number)
-        this.snsids[this.historyResults[key].Serial_Number] = key
-      }
-
-      this.projectcode_batch = {}
-      for(const key in this.historyResults){
-        this.historyResults[key].Project_Code = this.historyResults[key].Project_Code + '';
-        this.historyResults[key].Batch_ID = this.historyResults[key].Batch_ID + '';
-
-        if(Object.keys(this.projectcode_batch).indexOf(this.historyResults[key].Project_Code) == -1){
-          this.projectcode_batch[this.historyResults[key].Project_Code] = {
-            batches: [],
-            description: this.historyResults[key].Product_Description,
+            this.projectcode_batch[this.historyResults[key].Project_Code]
+              .batches.sort();
           }
-        }
-
-        if(this.projectcode_batch[this.historyResults[key].Project_Code].batches.indexOf(this.historyResults[key].Batch_ID) == -1){
-          this.projectcode_batch[this.historyResults[key].Project_Code].batches.push(this.historyResults[key].Batch_ID)
-          this.projectcode_batch[this.historyResults[key].Project_Code].batches.sort()
-        }
-
-      }
-      console.log('Initial Data fetched!')
-    });
-
+        });
+        console.log('Initial Data fetched!');
+      });
 
 
     this.getUpdatedData();
-    setInterval(this.getUpdatedData, 10000)
-  }
+    setInterval(this.getUpdatedData, 10000);
+  },
 };
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <style>
@@ -600,8 +597,6 @@ export default {
   grid-gap: 0.5rem 0.5rem; */
   --container-width: 700px;
 }
-
-
 
 
 .container {
@@ -713,7 +708,7 @@ align-items: center;
 .container__tracked-units{
   width: 100%;
   overflow-y: scroll;
-  margin: 2rem auto; 
+  margin: 2rem auto;
   border-bottom: 2px solid #ccc;
 }
 
@@ -726,9 +721,6 @@ align-items: center;
   height: 300px;
   transition: all .6s;
 }
-
-
-
 
 
 .unit-details-container {
@@ -762,7 +754,7 @@ align-items: center;
   background-color: gray;
   color: white;
   grid-column: 1/3;
-} 
+}
 .status-pass{
   background-color: hsl(120,55%,35%) !important;
 }
@@ -773,7 +765,7 @@ align-items: center;
   justify-content: flex-start;
   /* padding-left: 35%; */
   margin-left: -15%;
-} 
+}
 
 
 .unit-details-data{
@@ -787,7 +779,7 @@ align-items: center;
 .unit-details-data > a{
   align-self: flex-start;
 }
-    
+
 .fa-long-arrow-alt-left{
   font-size: 2rem;
   border-radius: 3px;
@@ -795,13 +787,12 @@ align-items: center;
   font-size: 3rem;
   color: white;
   background-color: #676b95;
-  position: relative; 
+  position: relative;
   right: calc(50% - 3rem);
 }
 .fa-long-arrow-alt-left-container:hover > .fa-long-arrow-alt-left{
   background-color: #454c95;
 }
-
 
 
 @media only screen and (min-width: 1200px){

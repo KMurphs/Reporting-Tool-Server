@@ -11,15 +11,15 @@
         <div><span>Status</span><span>testContent</span></div>
       </div>
       <div>
-        <UnitGroupResults v-bind:configData="configDatap" 
+        <UnitGroupResults v-bind:configData="configDatap"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
-        <UnitGroupResults v-bind:configData="configDataf" 
+        <UnitGroupResults v-bind:configData="configDataf"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
-        <UnitGroupResults v-bind:configData="configDatap" 
+        <UnitGroupResults v-bind:configData="configDatap"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
@@ -27,7 +27,7 @@
       </div>
 
 
-    </div>  
+    </div>
 
 
     <MovingInElt v-bind:isVisible="isVisible"
@@ -43,18 +43,6 @@
 </template>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <script>
 import MovingInElt from './components/MovingInElt.vue';
 import UnitGroupResults from './components/UnitGroupResults.vue';
@@ -63,57 +51,43 @@ export default {
   name: 'app',
   components: {
     MovingInElt,
-    UnitGroupResults
+    UnitGroupResults,
   },
-  data: function () {
+  data() {
     return {
       isVisible: true,
       configDatap: {
-        'sn': '145130001',
-        'isPass': true,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: true,
+        testgroup: 'Ambient',
       },
       configDataf: {
-        'sn': '145130001',
-        'isPass': false,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: false,
+        testgroup: 'Ambient',
       },
       configStyle: {
-        'passPrimaryColor': 'hsl(120,45%,70%)',
-        'passDarkColor': 'hsl(120,55%,35%)',
-        'failPrimaryColor': 'hsl(0,45%,70%)',
-        'failDarkColor': 'hsl(0,55%,35%)',
+        passPrimaryColor: 'hsl(120,45%,70%)',
+        passDarkColor: 'hsl(120,55%,35%)',
+        failPrimaryColor: 'hsl(0,45%,70%)',
+        failDarkColor: 'hsl(0,55%,35%)',
       },
-    }
+    };
   },
   methods: {
-    onNewSNUnitMsg: function(msgType, data){
-      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`)
-    }
-  }, 
-  created: function(){
-
+    onNewSNUnitMsg(msgType, data) {
+      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`);
+    },
+  },
+  created() {
     setInterval(
-      () => { 
-        this.isVisible = !this.isVisible
-    }, 2000);
-  }
+      () => {
+        this.isVisible = !this.isVisible;
+      }, 2000,
+    );
+  },
 };
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <style>

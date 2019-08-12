@@ -1,18 +1,24 @@
 <template>
   <div class="unit-group-results-container">
-    <a href="#" v-bind:style="'background-color: ' + (!configData.isPass ? configStyle.failPrimaryColor : configStyle.passPrimaryColor)+ ';'"
+    <a href="#" v-bind:style="'background-color: ' + (!configData.isPass
+                                                      ? configStyle.failPrimaryColor
+                                                      : configStyle.passPrimaryColor)+ ';'"
                 v-on:click="onClick">
       <span>
         <span class="unit-group-results__sn">
           <span>{{configData.sn}}</span>
         </span>
         <span class="unit-group-results__data">
-              <!-- v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'"> -->
+              <!-- v-bind:style="'background-color: ' + (configData.isPass
+                                                        ? configStyle.passDarkColor
+                                                        : configStyle.failDarkColor)+ ';'"> -->
           <span>Click to Look at Results for Test Group</span>
           <span>{{configData.testgroup}}</span>
         </span>
         <span class="unit-group-results__motioned-control">
-          <span v-bind:style="'background-color: ' + (!configData.isPass ? configStyle.failDarkColor : configStyle.passDarkColor)+ ';'">
+          <span v-bind:style="'background-color: ' + (!configData.isPass
+                                                      ? configStyle.failDarkColor
+                                                      : configStyle.passDarkColor)+ ';'">
             {{!configData.isPass ? 'FAIL' : 'PASS'}}
           </span>
         </span>
@@ -23,32 +29,29 @@
 </template>
 
 
-
 <script>
 export default {
-    name: 'UnitGroupResults',
-    
-    props: {
-        configData: Object,
-        configStyle: Object,
-        name: String,
+  name: 'UnitGroupResults',
+
+  props: {
+    configData: Object,
+    configStyle: Object,
+    name: String,
+  },
+  data() {
+    return {
+      someData: true,
+    };
+  },
+  created() {
+  },
+  methods: {
+    onClick() {
+      this.$emit('msg', this.name, this.configData.testgroup);
     },
-    data: function () {
-        return {
-            someData: true
-        }
-    },
-    created: function () {
-    },
-    methods: {
-      onClick: function(){
-        this.$emit('msg', this.name, this.configData.testgroup)
-      }
-    },
+  },
 };
 </script>
-
-
 
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -75,7 +78,7 @@ export default {
 .unit-group-results-container > a {
   background-color: white;
   border-radius: 3px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 .unit-group-results-container > a > span {
   display: flex;

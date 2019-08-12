@@ -22,23 +22,23 @@ export default {
   components: {
     MovingInElt,
   },
-  data: function () {
+  data() {
     return {
-      isVisible: true
-    }
+      isVisible: true,
+    };
   },
   methods: {
-    onNewSNUnitMsg: function(msgType, data){
-      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`)
-    }
-  }, 
-  created: function(){
-
+    onNewSNUnitMsg(msgType, data) {
+      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`);
+    },
+  },
+  created() {
     setInterval(
-      () => { 
-        this.isVisible = !this.isVisible
-    }, 2000);
-  }
+      () => {
+        this.isVisible = !this.isVisible;
+      }, 2000,
+    );
+  },
 };
 </script>
 

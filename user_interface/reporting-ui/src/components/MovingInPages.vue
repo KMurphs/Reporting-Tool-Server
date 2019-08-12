@@ -1,11 +1,11 @@
 <template>
 
-    
+
   <div class="data-unit" v-bind:id="'data-unit-' + sndata.sn">
     <section class="section section--current">
       <main class="main-section" id="main-section">
 
-dfsdf
+
       </main>
     </section>
   </div>
@@ -24,35 +24,35 @@ export default {
     // client: String,
     // sessions: Array[String],
     sndata: Object,
-    status: Object
+    status: Object,
   },
-  data: function () {
+  data() {
     return {
       sessionsData: [],
       dbColors: ['', '#849a92', '#3c9a77', '#006942'],
-      repColors: ['', '#d4b18e', '#b1793f', '#b35b00']
-    }
+      repColors: ['', '#d4b18e', '#b1793f', '#b35b00'],
+    };
   },
-  created: function () {
-    for(const session of this.sndata.sessions){
+  created() {
+    this.sndata.sessions.forEach((session, index) => {
       this.sessionsData.push({
-        "sessionNo": this.sessionsData.length + 1,
-        "sn": this.sndata.sn,
-        "sessionid": session,
-      })
-    }
+        sessionNo: index + 1,
+        sn: this.sndata.sn,
+        sessionid: session,
+      });
+    });
   },
   components: {
 
   },
   methods: {
-    onSessionChanged: function (newSession) {
-      this.$emit('snunitmsg', 'sessionChanged', newSession)
+    onSessionChanged(newSession) {
+      this.$emit('snunitmsg', 'sessionChanged', newSession);
     },
-    onUnitErased: function () {
-      this.$emit('snunitmsg', 'unitErased', this.sndata.sn)
-    }
-  }
+    onUnitErased() {
+      this.$emit('snunitmsg', 'unitErased', this.sndata.sn);
+    },
+  },
 };
 </script>
 
@@ -64,4 +64,3 @@ export default {
     background-color: rgb(0, 119, 255);
   }
 </style>
-

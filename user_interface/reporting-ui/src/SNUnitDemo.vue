@@ -15,43 +15,44 @@ export default {
   components: {
     SNUnit,
   },
-  data: function () {
+  data() {
     return {
-      sn: "145130002",
-      sessions: ["54","55","56","58"],
-      client: "Periseo",
-      batchno: "42",
-      projectcode: "14513 (Marce Controller)",
+      sn: '145130002',
+      sessions: ['54', '55', '56', '58'],
+      client: 'Periseo',
+      batchno: '42',
+      projectcode: '14513 (Marce Controller)',
       sndata: {},
-      snstatus: {}
-    }
+      snstatus: {},
+    };
   },
   methods: {
-    onNewSNUnitMsg: function(msgType, data){
-      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`)
-    }
-  }, 
-  created: function(){
+    onNewSNUnitMsg(msgType, data) {
+      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`);
+    },
+  },
+  created() {
     this.sndata = {
-      "sn": this.sn,
-      "projectcode": this.projectcode,
-      "batchno": this.batchno,
-      "client": this.client,
-      "sessions": this.sessions,
-    }
+      sn: this.sn,
+      projectcode: this.projectcode,
+      batchno: this.batchno,
+      client: this.client,
+      sessions: this.sessions,
+    };
 
     this.snstatus = {
       dbStatus: 3,
-      repStatus: 3
-    }
+      repStatus: 3,
+    };
 
     setInterval(
-      () => { 
-        this.snstatus.dbStatus = (this.snstatus.dbStatus >= 3 ? 0 : this.snstatus.dbStatus + 1)
-        this.snstatus.repStatus = (this.snstatus.repStatus <= 0 ? 3 :this.snstatus.repStatus - 1)
-        //console.log(JSON.stringify(this.snstatus))
-    }, 1000);
-  }
+      () => {
+        this.snstatus.dbStatus = (this.snstatus.dbStatus >= 3 ? 0 : this.snstatus.dbStatus + 1);
+        this.snstatus.repStatus = (this.snstatus.repStatus <= 0 ? 3 : this.snstatus.repStatus - 1);
+        // console.log(JSON.stringify(this.snstatus))
+      }, 1000,
+    );
+  },
 };
 </script>
 

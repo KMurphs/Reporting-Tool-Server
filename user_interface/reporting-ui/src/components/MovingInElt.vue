@@ -1,7 +1,7 @@
 <template>
     <div class="moving-in-container"
-         v-bind:class="{ visible: isVisible }"   
-         v-bind:style="configStyle">      
+         v-bind:class="{ visible: isVisible }"
+         v-bind:style="configStyle">
 
         <slot></slot>
 
@@ -10,21 +10,21 @@
 
 <script>
 export default {
-    name: 'MovingInElt',
-    
-    props: {
-        isVisible: Boolean,
-        configStyle: Object,
-    },
-    data: function () {
-        return {
-            someData: true
-        }
-    },
-    created: function () {
-    },
-    methods: {
-    },
+  name: 'MovingInElt',
+
+  props: {
+    isVisible: Boolean,
+    configStyle: Object,
+  },
+  data() {
+    return {
+      someData: true,
+    };
+  },
+  created() {
+  },
+  methods: {
+  },
 };
 </script>
 

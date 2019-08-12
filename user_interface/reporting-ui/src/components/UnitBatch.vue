@@ -1,23 +1,38 @@
 <template>
-  <div class="unit-group-results-container" v-bind:style="'border-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'">
-    <a href="#" v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor)+ ';'"
+  <div class="unit-group-results-container"
+       v-bind:style="'border-color: ' + (configData.isPass
+                                          ? configStyle.passDarkColor
+                                          : configStyle.failDarkColor)+ ';'">
+    <a href="#" v-bind:style="'background-color: ' + (configData.isPass
+                                                      ? configStyle.passPrimaryColor
+                                                      : configStyle.failPrimaryColor)+ ';'"
                 v-on:click="onUnitSelected()">
       <span>
         <span>
           <span>{{configData.sn}}</span>
         </span>
         <span>
-          <span v-bind:style="'background-color: ' + (configData.isPass ? configStyle.passDarkColor : configStyle.failDarkColor)+ ';'">
+          <span v-bind:style="'background-color: ' + (configData.isPass
+                                                      ? configStyle.passDarkColor
+                                                      : configStyle.failDarkColor)+ ';'">
             {{configData.isPass ? 'PASS' : 'FAIL'}}
           </span>
-          <span v-bind:style="'background-color: ' + (configData.client == 'Periseo' ? configStyle.normalClientColor : configStyle.fieldClientColor) + ';'">
+          <span v-bind:style="'background-color: ' + (configData.client == 'Periseo'
+                                                      ? configStyle.normalClientColor
+                                                      : configStyle.fieldClientColor) + ';'">
                 {{configData.client}}
           </span>
         </span>
         <span class="unit-group-results__data">
-          <!-- <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor) + ';'" -->
-          <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passDarkColor : configStyle.failDarkColor) + ';'"
-                v-for="(item, index) in configData.data" 
+          <!-- <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + ');
+          background-color: ' + (item.isPass
+                                ? configStyle.passPrimaryColor
+                                : configStyle.failPrimaryColor) + ';'" -->
+          <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); \
+                              background-color: ' + (item.isPass
+                                                    ? configStyle.passDarkColor
+                                                    : configStyle.failDarkColor) + ';'"
+                v-for="(item, index) in configData.data"
                 v-bind:key="index">
                 {{item.content}}
           </span>
@@ -30,31 +45,28 @@
 </template>
 
 
-
 <script>
 export default {
-    name: 'UnitBatch',
-    
-    props: {
-        configData: Object,
-        configStyle: Object,
+  name: 'UnitBatch',
+
+  props: {
+    configData: Object,
+    configStyle: Object,
+  },
+  data() {
+    return {
+      someData: true,
+    };
+  },
+  created() {
+  },
+  methods: {
+    onUnitSelected() {
+      this.$emit('snunitbatchmsg', 'unitselected', this.configData.sn);
     },
-    data: function () {
-        return {
-            someData: true
-        }
-    },
-    created: function () {
-    },
-    methods: {
-      onUnitSelected: function(){
-        this.$emit('snunitbatchmsg', 'unitselected', this.configData.sn)
-      }
-    },
+  },
 };
 </script>
-
-
 
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -88,7 +100,7 @@ export default {
 .unit-group-results-container > a {
   background-color: white;
   border-radius: 3px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 .unit-group-results-container > a > span {
   display: flex;
@@ -129,7 +141,6 @@ export default {
 .unit-group-results-container > a > span > span > span {
   padding: 1rem 1.5rem;
 }
-
 
 
 .unit-group-results__data > span{

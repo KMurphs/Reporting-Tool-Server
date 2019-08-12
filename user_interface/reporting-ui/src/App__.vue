@@ -2,7 +2,7 @@
   <div id="app">
 
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-        <InputAutoComplete v-bind:configData="['1','11','111']" 
+        <InputAutoComplete v-bind:configData="['1','11','111']"
                            v-bind:configStyle="{
                              'placeholder': 'myplaceholder',
                            }">
@@ -13,13 +13,15 @@
         <h1>Tracked Devices</h1>
       </div>
 
-      <div class="container__message-when-empty" v-bind:style="'display: ' + (trackedUnits.length == 0 ? 'block' : 'none')">
+      <div class="container__message-when-empty"
+            v-bind:style="'display: ' + (trackedUnits.length === 0 ? 'block' : 'none')">
         <h2>Click Here To add a device to track</h2>
         <button>Click here</button>
       </div>
 
-      <div class="container__tracked-units" v-bind:style="'display: ' + (trackedUnits.length != 0 ? 'block' : 'none')">
-        <UnitBatch v-bind:configData="configData" 
+      <div class="container__tracked-units"
+            v-bind:style="'display: ' + (trackedUnits.length != 0 ? 'block' : 'none')">
+        <UnitBatch v-bind:configData="configData"
                           v-bind:configStyle="configStyle"
                           v-for="idx in [1,2,3,4,5,6,7,8,9,10]"
                           v-bind:key="idx">
@@ -31,7 +33,7 @@
       <div></div>
 
       <div id="container__add-units-control" v-bind:style="'z-index: ' + (isAdding ? 0 : -1)"> ;
-        <MovingInElt 
+        <MovingInElt
                       v-bind:isVisible="isAdding"
                       v-bind:configStyle="{
                         'height': '300px',
@@ -43,8 +45,7 @@
       </div>
 
 
-
-    </div>  
+    </div>
 
     <div class="container container__details">
       <div class="device-details-title">
@@ -59,27 +60,29 @@
         <div><span>Status: </span><span>PASS</span></div>
       </div>
       <div class="unit-details-data">
-        <a href="#" class="fa-long-arrow-alt-left-container" v-on:click="addUnits(true)"><i class="fas fa-long-arrow-alt-left"></i></a>
-        <UnitGroupResults v-bind:configData="configDatap" 
+        <a href="#" class="fa-long-arrow-alt-left-container" v-on:click="addUnits(true)">
+          <i class="fas fa-long-arrow-alt-left"></i>
+        </a>
+        <UnitGroupResults v-bind:configData="configDatap"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
-        <UnitGroupResults v-bind:configData="configDataf" 
+        <UnitGroupResults v-bind:configData="configDataf"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
-        <UnitGroupResults v-bind:configData="configDatap" 
+        <UnitGroupResults v-bind:configData="configDatap"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
-        <UnitGroupResults v-bind:configData="configDatap" 
+        <UnitGroupResults v-bind:configData="configDatap"
                           v-bind:configStyle="configStyle">
         </UnitGroupResults>
 
 
       </div>
       <!-- <div>
-        <MovingInElt 
+        <MovingInElt
                       v-bind:isVisible="isVisible"
                       v-bind:configStyle="{
                         'height': '100px',
@@ -91,144 +94,113 @@
       </div> -->
 
 
-    </div>  
+    </div>
 
 
-
-
-    <a href="#" class="fa-plus-container" v-bind:style="'display: ' + (!isAdding ? 'inline-block' : 'none')" v-on:click="addUnits(true)"><i class="fas fa-plus"></i></a>
-    <a href="#" class="fa-check-container" v-bind:style="'display: ' + (isAdding ? 'inline-block' : 'none')" v-on:click="addUnits(false)"><i class="fas fa-check"></i></a>
+    <a href="#" class="fa-plus-container"
+        v-bind:style="'display: ' + (!isAdding ? 'inline-block' : 'none')"
+        v-on:click="addUnits(true)"><i class="fas fa-plus"></i></a>
+    <a href="#" class="fa-check-container"
+        v-bind:style="'display: ' + (isAdding ? 'inline-block' : 'none')"
+        v-on:click="addUnits(false)"><i class="fas fa-check"></i></a>
   </div>
 </template>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <script>
-import MovingInElt from './components/MovingInElt.vue';
-import UnitGroupResults from './components/UnitGroupResults.vue';
-import UnitBatch from './components/UnitBatch.vue';
-import UnitSelect from './components/UnitSelect.vue';
+// import MovingInElt from './components/MovingInElt.vue';
+// import UnitGroupResults from './components/UnitGroupResults.vue';
+// import UnitBatch from './components/UnitBatch.vue';
+// import SNUnitSelect from './components/SNUnitSelect.vue';
 import InputAutoComplete from './components/InputAutoComplete.vue';
 
 export default {
   name: 'app',
   components: {
-    MovingInElt,
-    UnitGroupResults,
-    UnitBatch,
-    UnitSelect,
-    InputAutoComplete
+    // MovingInElt,
+    // UnitGroupResults,
+    // UnitBatch,
+    // SNUnitSelect,
+    InputAutoComplete,
   },
-  data: function () {
+  data() {
     return {
       data: {},
       trackedUnits: [1],
       isAdding: false,
       isVisible: true,
       configData: {
-        'sn': '145130001',
-        'isPass': true,
-        'client': 'Periseo',
-        'data': [{
-          'content': 'Ambient',
-          'isPass': true,
-        },{
-          'content': 'Cold',
-          'isPass': false,
-        },{
-          'content': 'Hot',
-          'isPass': true,
-        }]
+        sn: '145130001',
+        isPass: true,
+        client: 'Periseo',
+        data: [{
+          content: 'Ambient',
+          isPass: true,
+        }, {
+          content: 'Cold',
+          isPass: false,
+        }, {
+          content: 'Hot',
+          isPass: true,
+        }],
       },
       configDatap: {
-        'sn': '145130001',
-        'isPass': true,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: true,
+        testgroup: 'Ambient',
       },
       configDataf: {
-        'sn': '145130001',
-        'isPass': false,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: false,
+        testgroup: 'Ambient',
       },
       configStyle: {
-        'passPrimaryColor': 'hsl(120,45%,70%)',
-        'passDarkColor': 'hsl(120,55%,35%)',
-        'failPrimaryColor': 'hsl(0,45%,70%)',
-        'failDarkColor': 'hsl(0,55%,35%)',
-        'normalClientColor': 'rgb(214, 198, 174)',
-        'fieldClientColor': 'rgb(214, 198, 174)',
+        passPrimaryColor: 'hsl(120,45%,70%)',
+        passDarkColor: 'hsl(120,55%,35%)',
+        failPrimaryColor: 'hsl(0,45%,70%)',
+        failDarkColor: 'hsl(0,55%,35%)',
+        normalClientColor: 'rgb(214, 198, 174)',
+        fieldClientColor: 'rgb(214, 198, 174)',
       },
-    }
+    };
   },
   methods: {
-    onNewSNUnitMsg: function(msgType, data){
-      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`)
+    onNewSNUnitMsg(msgType, data) {
+      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`);
     },
-    addUnits: function(doStart){
+    addUnits(doStart) {
       this.isAdding = doStart;
-      console.log(this.isAdding)
-      if(this.isAdding){
-
-      }else{
-
-      }
+      console.log(this.isAdding);
     },
-    getData: function(url) {
-
-      return new Promise((resolve, reject) => {
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
+    getData(url) {
+      return new Promise((resolve) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = () => {
+          if (this.readyState === 4 && this.status === 200) {
             resolve(JSON.parse(this.responseText));
           }
         };
-        xhttp.open("GET", url, true);
+        xhttp.open('GET', url, true);
         xhttp.send();
-      })                        
-    }
-  }, 
-  created: function(){
-
-    this.getData("http://localhost:5001/api/v1/data/units")
-    .then((res)=>{
-      this.data = res.data;
-      console.log(this.data)
-      console.log("Hello")
-    });
+      });
+    },
+  },
+  created() {
+    this.getData('http://localhost:5001/api/v1/data/units')
+      .then((res) => {
+        this.data = res.data;
+        console.log(this.data);
+        console.log('Hello');
+      });
 
 
     // setInterval(
-    //   () => { 
+    //   () => {
     //     this.isVisible = !this.isVisible
     // }, 2000);
-  }
+  },
 };
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <style>
@@ -251,8 +223,6 @@ export default {
   grid-template-rows: 1fr;
   grid-gap: 0.5rem 0.5rem;
 }
-
-
 
 
 .container {
@@ -339,12 +309,12 @@ export default {
   margin: 0 auto;
   padding: 1rem;
   background-color: #ccc;
-  
+
 }
 .container__tracked-units{
   width: 100%;
   overflow-y: scroll;
-  margin: 2rem auto; 
+  margin: 2rem auto;
   border-bottom: 2px solid #ccc;
 }
 
@@ -354,9 +324,6 @@ export default {
   bottom: 0;
   width: calc((100% - 0.5rem)/2);
 }
-
-
-
 
 
 .unit-details-container {
@@ -386,11 +353,11 @@ export default {
   color: white;
   background-color: hsl(120,55%,35%);
   grid-column: 1/3;
-} 
+}
 .unit-details-container div:last-child span:last-child{
   justify-content: flex-start;
   padding-left: 35%;
-} 
+}
 
 
 .unit-details-data{
@@ -402,7 +369,7 @@ export default {
 .unit-details-data > a{
   align-self: flex-start;
 }
-    
+
 .fa-long-arrow-alt-left{
   font-size: 2rem;
   border-radius: 3px;
@@ -410,13 +377,12 @@ export default {
   font-size: 3rem;
   color: white;
   background-color: #676b95;
-  position: relative; 
+  position: relative;
   right: calc(50% - 3rem);
 }
 .fa-long-arrow-alt-left-container:hover > .fa-long-arrow-alt-left{
   background-color: #454c95;
 }
-
 
 
 @media only screen and (min-width: 1200px){

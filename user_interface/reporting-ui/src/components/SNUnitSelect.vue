@@ -2,27 +2,38 @@
   <section class="add-section__controls">
 
     <section class="add-section__tab-controls">
-      <button v-on:click="showAddSectionTab('serial-number-tab')" class='add-section__tab-control--current' >By Serial Number</button>
-      <button v-on:click="showAddSectionTab('product-batch-tab')">By Product Name, Batch Number</button>
+      <button v-on:click="showAddSectionTab('serial-number-tab')"
+              class='add-section__tab-control--current' >
+        By Serial Number
+      </button>
+      <button v-on:click="showAddSectionTab('product-batch-tab')">
+        By Product Name, Batch Number
+      </button>
     </section>
 
     <section class="add-section__tab add-section__tab--current">
-      <p>Enter Serial Number</p>  
-      <input type="number" id='serial-number' placeholder="Enter Serial Number" v-model="units.sn">
+      <p>Enter Serial Number</p>
+      <input type="number" id='serial-number'
+            placeholder="Enter Serial Number" v-model="units.sn">
     </section>
 
     <section class='add-section__tab'>
-      <p>Enter Project Code and Batch ID</p> 
+      <p>Enter Project Code and Batch ID</p>
 
-      <select name="ProjectCodes" id='project-code-entries' v-model="units.projectcode"
-                                                            v-on:click="updateBatch()">
+      <select name="ProjectCodes" id='project-code-entries'
+              v-model="units.projectcode"
+              v-on:click="updateBatch()">
         <option v-for="(item, index) in Object.keys(projectcode_batch)"
                 v-bind:key="index"
-                v-bind:value="item">{{item + ' (' + projectcode_batch[item].description + ')'}}</option>
+                v-bind:value="item">
+                {{item + ' (' + projectcode_batch[item].description + ')'}}
+        </option>
       </select>
 
       <select name="BatchIDs" id='batch-id-entries' v-model="units.batchno">
-        <option v-for="(item, index) in (units.projectcode != '' ? projectcode_batch[units.projectcode]['batches'] : [])"
+        <option v-for="(item, index) in (units.projectcode != ''
+                                        ? projectcode_batch[units.projectcode]['batches']
+                                        : [])"
                 v-bind:key="index"
                 v-bind:value="item">{{item}}</option>
       </select>
@@ -30,65 +41,63 @@
     </section>
 
     <section class="add-section__add-control-container">
-      <button v-on:click="onUnitsAdded()" class="add-section__add-control">Add Serial Numbers</button> 
+      <button v-on:click="onUnitsAdded()"
+              class="add-section__add-control">Add Serial Numbers
+      </button>
     </section>
   </section>
 </template>
 
 
-
 <script>
 export default {
-    name: 'SNUnitSelect',
-    
-    props: {
-        projectcode_batch: Object,
-        // configData: Object,
-        // configStyle: Object,
-    },
-    data: function () {
-        return {
-          units: {
-            sn: '',
-            projectcode: '',
-            batchno: '',
-          }
-        }
-    },
-    created: function () {
-    },
-    methods: {
-      onUnitsAdded: function(){
-        this.$emit('snunitselect', 'unitsadded', this.units)
+  name: 'SNUnitSelect',
+
+  props: {
+    projectcode_batch: Object,
+    // configData: Object,
+    // configStyle: Object,
+  },
+  data() {
+    return {
+      units: {
+        sn: '',
+        projectcode: '',
+        batchno: '',
       },
-      showAddSectionTab: function(tabName) {
-        const tabs = document.querySelectorAll(".add-section__tab")
-        const controls = document.querySelectorAll(".add-section__tab-controls button")
-
-        const newClass_tab = "add-section__tab--current";
-        const newClass_controls = "add-section__tab-control--current";
-
-        let index_old = 1;
-        let index_new = 0;
-        if(tabName != "serial-number-tab"){
-          index_old = 0;
-          index_new = 1;
-        }
-
-        tabs[index_old].classList.remove(newClass_tab)
-        tabs[index_new].classList.add(newClass_tab);
-        controls[index_old].classList.remove(newClass_controls)
-        controls[index_new].classList.add(newClass_controls);
-
-      },
-      updateBatch: function(){
-
-      },
+    };
+  },
+  created() {
+  },
+  methods: {
+    onUnitsAdded() {
+      this.$emit('snunitselect', 'unitsadded', this.units);
     },
+    showAddSectionTab(tabName) {
+      const tabs = document.querySelectorAll('.add-section__tab');
+      const controls = document.querySelectorAll('.add-section__tab-controls button');
+
+      const newClassTab = 'add-section__tab--current';
+      const newClassControls = 'add-section__tab-control--current';
+
+      let indexOld = 1;
+      let indexNew = 0;
+      if (tabName !== 'serial-number-tab') {
+        indexOld = 0;
+        indexNew = 1;
+      }
+
+      tabs[indexOld].classList.remove(newClassTab);
+      tabs[indexNew].classList.add(newClassTab);
+      controls[indexOld].classList.remove(newClassControls);
+      controls[indexNew].classList.add(newClassControls);
+    },
+    updateBatch() {
+
+    },
+  },
 };
 </script>
-
-
 
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -164,7 +173,7 @@ button{
     background-color: var(--faded-background);
     padding-bottom: 1rem;
     border: 2px solid var(--primary-color--light);
-} 
+}
 
  .add-section__tab--current select:nth-of-type(1) {
     margin-bottom: 1rem;
@@ -199,7 +208,7 @@ button{
 
 .add-section__controls select:nth-of-type(2) {
     width: 25%;
-} 
+}
 
 
 </style>

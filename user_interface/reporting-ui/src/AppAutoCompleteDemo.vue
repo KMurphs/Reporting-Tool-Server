@@ -2,9 +2,9 @@
   <div id="app">
 
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-        <InputAutoComplete v-bind:configData="someData" 
+        <InputAutoComplete v-bind:configData="someData"
                            v-bind:configStyle="{
-                              'placeholder': 'myplaceholder',              
+                              'placeholder': 'myplaceholder',
                               'font-size': '2rem',
                               'font-weight': 'bold',
                               'text-align': 'center',
@@ -25,25 +25,23 @@
 </template>
 
 
-
-
 <script>
-import MovingInElt from './components/MovingInElt.vue';
-import UnitGroupResults from './components/UnitGroupResults.vue';
-import UnitBatch from './components/UnitBatch.vue';
-import UnitSelect from './components/UnitSelect.vue';
+// import MovingInElt from './components/MovingInElt.vue';
+// import UnitGroupResults from './components/UnitGroupResults.vue';
+// import UnitBatch from './components/UnitBatch.vue';
+// import SNUnitSelect from './components/SNUnitSelect.vue';
 import InputAutoComplete from './components/InputAutoComplete.vue';
 
 export default {
   name: 'app',
   components: {
-    MovingInElt,
-    UnitGroupResults,
-    UnitBatch,
-    UnitSelect,
-    InputAutoComplete
+    // MovingInElt,
+    // UnitGroupResults,
+    // UnitBatch,
+    // UnitSelect,
+    InputAutoComplete,
   },
-  data: function () {
+  data() {
     return {
       data: {},
       someData: [],
@@ -51,65 +49,52 @@ export default {
       isAdding: false,
       isVisible: true,
       configData: {
-        'sn': '145130001',
-        'isPass': true,
-        'client': 'Periseo',
-        'data': [{
-          'content': 'Ambient',
-          'isPass': true,
-        },{
-          'content': 'Cold',
-          'isPass': false,
-        },{
-          'content': 'Hot',
-          'isPass': true,
-        }]
+        sn: '145130001',
+        isPass: true,
+        client: 'Periseo',
+        data: [{
+          content: 'Ambient',
+          isPass: true,
+        }, {
+          content: 'Cold',
+          isPass: false,
+        }, {
+          content: 'Hot',
+          isPass: true,
+        }],
       },
       configDatap: {
-        'sn': '145130001',
-        'isPass': true,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: true,
+        testgroup: 'Ambient',
       },
       configDataf: {
-        'sn': '145130001',
-        'isPass': false,
-        'testgroup': 'Ambient'
+        sn: '145130001',
+        isPass: false,
+        testgroup: 'Ambient',
       },
       configStyle: {
-        'passPrimaryColor': 'hsl(120,45%,70%)',
-        'passDarkColor': 'hsl(120,55%,35%)',
-        'failPrimaryColor': 'hsl(0,45%,70%)',
-        'failDarkColor': 'hsl(0,55%,35%)',
-        'normalClientColor': 'rgb(214, 198, 174)',
-        'fieldClientColor': 'rgb(214, 198, 174)',
+        passPrimaryColor: 'hsl(120,45%,70%)',
+        passDarkColor: 'hsl(120,55%,35%)',
+        failPrimaryColor: 'hsl(0,45%,70%)',
+        failDarkColor: 'hsl(0,55%,35%)',
+        normalClientColor: 'rgb(214, 198, 174)',
+        fieldClientColor: 'rgb(214, 198, 174)',
       },
-    }
+    };
   },
   methods: {
-  }, 
-  created: function(){
+  },
+  created() {
     setInterval(
-      () => { 
-        this.someData.push(this.someData.length + '')
-        console.log(this.someData)
-    }, 2000);
-  }
+      () => {
+        this.someData.push(`${this.someData.length}`);
+        console.log(this.someData);
+      }, 2000,
+    );
+  },
 };
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <style>
