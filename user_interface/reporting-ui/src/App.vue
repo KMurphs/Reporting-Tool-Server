@@ -11,14 +11,15 @@
 
       <div class="container__message-when-empty" v-bind:style="'display: ' + (trackedUnits.length == 0 ? 'block' : 'none')">
         <h2>Click Here To add a device to track</h2>
-        <button>Click here</button>
+        <button v-on:click="addUnits(true)"><i class="fas fa-plus"></i>Add Units to Track</button>
       </div>
 
       <div class="container__tracked-units" v-bind:style="'display: ' + (trackedUnits.length != 0 ? 'block' : 'none')">
-        <UnitBatch v-bind:configData="configData" 
-                          v-bind:configStyle="configStyle"
-                          v-for="idx in [1,2,3,4,5,6,7,8,9,10]"
-                          v-bind:key="idx">
+        <UnitBatch v-bind:configData="item" 
+                   v-bind:configStyle="configStyle"
+                   v-on:snunitbatchmsg="onSNSelected"
+                   v-for="(item, index) in trackedUnitsData"
+                   v-bind:key="index">
         </UnitBatch>
       </div>
 
@@ -32,9 +33,15 @@
                       v-bind:configStyle="{
                         'height': '300px',
                         'background-color': '#eee',
-                        'color': 'black'
+                        'color': 'black',
+                        'width': '100%',
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'justify-content': 'center',
+                        'align-items': 'center',
                       }">
-          <UnitSelect />
+          <SNUnitSelect v-bind:projectcode_batch="projectcode_batch"
+                        v-on:snunitselect="onTrackNewUnits"/>
         </MovingInElt>
       </div>
 
@@ -160,7 +167,7 @@
 import MovingInElt from './components/MovingInElt.vue';
 import UnitGroupResults from './components/UnitGroupResults.vue';
 import UnitBatch from './components/UnitBatch.vue';
-import UnitSelect from './components/UnitSelect.vue';
+import SNUnitSelect from './components/SNUnitSelect.vue';
 import InputAutoComplete from './components/InputAutoComplete.vue';
 
 export default {
@@ -169,19 +176,22 @@ export default {
     MovingInElt,
     UnitGroupResults,
     UnitBatch,
-    UnitSelect,
+    SNUnitSelect,
     InputAutoComplete
   },
   data: function () {
     return {
+      projectcode_batch: {},
       historyResults: {},
       batchResults: {},
       sns: [],
+      snsids: {},
       currentUnit: {
         Project_Code: '',
         Product_Description: '',
       },
-      trackedUnits: [1],
+      trackedUnits: [],
+      trackedUnitsData: [],
       isAdding: false,
       isVisible: true,
       configData: {
@@ -226,8 +236,24 @@ export default {
     }
   },
   methods: {
-    onNewSNUnitMsg: function(msgType, data){
-      console.log(`Msg ${msgType} received. Data: ${JSON.stringify(data)}`)
+    onTrackNewUnits: function(msgType, data){
+      // {"sn":"","projectcode":"14511","batchno":0}
+
+      if(data.sn != ''){
+        if(this.trackedUnits.indexOf(data.sn) == -1){
+          this.trackedUnits.push(data.sn)
+        }
+      }
+      if(data.projectcode != '' && data.batchno != ''){
+        for(const key in this.batchResults){
+          if(this.historyResults[key].Project_Code == data.projectcode && this.historyResults[key].Batch_ID == data.batchno){
+            if(this.trackedUnits.indexOf(this.batchResults[key].Serial_Number) == -1){
+              this.trackedUnits.push(this.batchResults[key].Serial_Number)
+            }
+          }
+        }
+      }
+
     },
     addUnits: function(doStart){
       this.isAdding = doStart;
@@ -240,7 +266,7 @@ export default {
     },
 
     onSNSelected: function(msgType, data){
-      if(msgType == 'snselected'){
+      if(msgType == 'snselected' || msgType == 'unitselected'){
   
         let temp = [];
         for(const key in this.historyResults){
@@ -434,6 +460,49 @@ export default {
       }
     },
 
+    updateDetails: function(){
+      if(this.trackedUnits.length > 0){
+        this.trackedUnits.sort();
+        this.trackedUnitsData = [];
+
+        for(const sn of this.trackedUnits){
+            const key = this.snsids[sn]
+
+            if(this.trackedUnits.indexOf(sn) != -1){
+              
+              
+                this.trackedUnitsData.push({
+                  'sn': sn + '',
+                  'isPass': this.batchResults[key].Final_Pass_Fail != 'FAIL',
+                  'client': this.batchResults[key].Client_Name,
+                  'data': [{
+                    'content': 'Ambient',
+                    'isPass': this.batchResults[key].Ambient != 'FAIL',
+                  },{
+                    'content': 'Cold',
+                    'isPass': this.batchResults[key].Cold != 'FAIL',
+                  },{
+                    'content': 'Hot',
+                    'isPass': this.batchResults[key].Hot != 'FAIL',
+                  }]
+                })
+
+            }
+        }
+      }
+
+    },
+
+
+    getUpdatedData: function(){
+      this.getData("http://localhost:5001/api/v1/data/batch")
+      .then((res)=>{ 
+        this.batchResults = res.data; 
+        this.updateDetails();
+        console.log('Updated Data fetched!')
+      });
+    },
+
 
     getData: function(url) {
 
@@ -447,7 +516,9 @@ export default {
         xhttp.open("GET", url, true);
         xhttp.send();
       })                        
-    }
+    },
+
+    
 
   }, 
   created: function(){
@@ -455,23 +526,38 @@ export default {
     this.getData("http://localhost:5001/api/v1/data/units")
     .then((res)=>{
       this.historyResults = res.data;
+      this.snsids = {};
       for(const key in this.historyResults){
+        this.historyResults[key].Serial_Number = this.historyResults[key].Serial_Number + '';
         this.sns.push(this.historyResults[key].Serial_Number)
-        // this.projectcode_batch
+        this.snsids[this.historyResults[key].Serial_Number] = key
       }
-    });
 
-    this.getData("http://localhost:5001/api/v1/data/batch")
-    .then((res)=>{ 
-      this.batchResults = res.data; 
+      this.projectcode_batch = {}
+      for(const key in this.historyResults){
+        this.historyResults[key].Project_Code = this.historyResults[key].Project_Code + '';
+        this.historyResults[key].Batch_ID = this.historyResults[key].Batch_ID + '';
+
+        if(Object.keys(this.projectcode_batch).indexOf(this.historyResults[key].Project_Code) == -1){
+          this.projectcode_batch[this.historyResults[key].Project_Code] = {
+            batches: [],
+            description: this.historyResults[key].Product_Description,
+          }
+        }
+
+        if(this.projectcode_batch[this.historyResults[key].Project_Code].batches.indexOf(this.historyResults[key].Batch_ID) == -1){
+          this.projectcode_batch[this.historyResults[key].Project_Code].batches.push(this.historyResults[key].Batch_ID)
+          this.projectcode_batch[this.historyResults[key].Project_Code].batches.sort()
+        }
+
+      }
       console.log('Initial Data fetched!')
     });
 
 
-    // setInterval(
-    //   () => { 
-    //     this.isVisible = !this.isVisible
-    // }, 2000);
+
+    this.getUpdatedData();
+    setInterval(this.getUpdatedData, 10000)
   }
 };
 </script>
@@ -506,16 +592,20 @@ export default {
   color: #2c3e50;
   /* margin-top: 60px; */
   height: 100vh;
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  /* display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr;
-  grid-gap: 0.5rem 0.5rem;
+  grid-gap: 0.5rem 0.5rem; */
+  --container-width: 700px;
 }
 
 
 
 
 .container {
+  width: var(--container-width);
   background-color: #fafafa;
   padding: 1rem;
 }
@@ -528,10 +618,11 @@ export default {
 }
 
 .container__details{
+  box-sizing: unset;
+  padding: 1rem;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 150px 130px 1fr;
-  padding: 0;
 }
 
 .tracked-devices-title
@@ -578,8 +669,8 @@ export default {
 }
 
 
-.fa-plus,
-.fa-check{
+.fa-plus-container > .fa-plus,
+.fa-check-container > .fa-check{
   font-size: 2rem;
   border-radius: 50%;
   padding: 1rem 1.2rem;
@@ -587,7 +678,7 @@ export default {
   color: white;
   background-color: #676b95;
   bottom: 1rem;
-  left: calc(50% - 6rem);
+  left: calc(var(--container-width) - 6rem);
   position: absolute;
 }
 .fa-plus-container:hover > .fa-plus,
@@ -599,7 +690,25 @@ export default {
   margin: 0 auto;
   padding: 1rem;
   background-color: #ccc;
-  
+  position: relative;
+    height: 150px;
+}
+.container__message-when-empty button{
+  position: absolute;
+    padding: .8rem 1rem;
+    bottom: 0;
+    right: 0;
+    margin: 1rem;
+    width: 15rem;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.container__message-when-empty button .fa-plus{
+    font-size: 1.4rem;
+    padding: 0rem 1.5rem;
+    color: blue;
+    font-weight: bold;
 }
 .container__tracked-units{
   width: 100%;
@@ -612,7 +721,10 @@ export default {
   position: fixed;
   /* z-index: -1; */
   bottom: 0;
-  width: calc((100% - 0.5rem)/2);
+  /* width: calc((550px - 0.5rem)/2); */
+  width: var(--container-width);
+  height: 300px;
+  transition: all .6s;
 }
 
 
@@ -693,13 +805,21 @@ export default {
 
 
 @media only screen and (min-width: 1200px){
-  #app {
+  /* #app {
     width: 1200px;
     margin: 0 auto;
+  } */
+  /* .container {
+    width: 35%;
   }
-  #container__add-units-control{
+  .fa-plus,
+  .fa-check{
+    left: calc(35% - 6rem);
+  } */
+  /* #container__add-units-control{
     width: calc((1200px - 0.5rem)/2);
-  }
+    width: 35%;
+  } */
 }
 </style>
 <style src="./assets/css/all.min.css" scoped>

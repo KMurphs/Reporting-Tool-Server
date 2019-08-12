@@ -13,10 +13,20 @@
 
     <section class='add-section__tab'>
       <p>Enter Project Code and Batch ID</p> 
-      <select name="ProjectCodes" id='project-code-entries' v-model="units.projectcode">
+
+      <select name="ProjectCodes" id='project-code-entries' v-model="units.projectcode"
+                                                            v-on:click="updateBatch()">
+        <option v-for="(item, index) in Object.keys(projectcode_batch)"
+                v-bind:key="index"
+                v-bind:value="item">{{item + ' (' + projectcode_batch[item].description + ')'}}</option>
       </select>
-      <select name="BatchIDs" id='batch-id-entries' v-model="units.batchid">
+
+      <select name="BatchIDs" id='batch-id-entries' v-model="units.batchno">
+        <option v-for="(item, index) in (units.projectcode != '' ? projectcode_batch[units.projectcode]['batches'] : [])"
+                v-bind:key="index"
+                v-bind:value="item">{{item}}</option>
       </select>
+
     </section>
 
     <section class="add-section__add-control-container">
@@ -29,18 +39,19 @@
 
 <script>
 export default {
-    name: 'UnitSelect',
+    name: 'SNUnitSelect',
     
     props: {
-        configData: Object,
-        configStyle: Object,
+        projectcode_batch: Object,
+        // configData: Object,
+        // configStyle: Object,
     },
     data: function () {
         return {
           units: {
             sn: '',
             projectcode: '',
-            batchid: '',
+            batchno: '',
           }
         }
     },
@@ -48,7 +59,7 @@ export default {
     },
     methods: {
       onUnitsAdded: function(){
-        this.$emit('snunitbatchmsg', 'unitsadded', this.units)
+        this.$emit('snunitselect', 'unitsadded', this.units)
       },
       showAddSectionTab: function(tabName) {
         const tabs = document.querySelectorAll(".add-section__tab")
@@ -69,7 +80,10 @@ export default {
         controls[index_old].classList.remove(newClass_controls)
         controls[index_new].classList.add(newClass_controls);
 
-      }
+      },
+      updateBatch: function(){
+
+      },
     },
 };
 </script>

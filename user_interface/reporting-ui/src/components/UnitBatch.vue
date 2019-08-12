@@ -15,7 +15,8 @@
           </span>
         </span>
         <span class="unit-group-results__data">
-          <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor) + ';'"
+          <!-- <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passPrimaryColor : configStyle.failPrimaryColor) + ';'" -->
+          <span v-bind:style="'width: calc(100% / ' + (configData.data.length) + '); background-color: ' + (item.isPass ? configStyle.passDarkColor : configStyle.failDarkColor) + ';'"
                 v-for="(item, index) in configData.data" 
                 v-bind:key="index">
                 {{item.content}}
@@ -106,11 +107,18 @@ export default {
   color: #1f196b;
   font-weight: bold;
 }
+.unit-group-results-container > a > span > span:first-child {
+  width: 120px;
+}
 .unit-group-results-container > a > span > span:nth-child(2) {
   color: white;
 }
+.unit-group-results-container > a > span > span:nth-child(2) > span {
+  width: 90px;
+}
 .unit-group-results-container > a > span > span:nth-child(2) > span:last-child {
   color: black;
+  width: 100px;
 }
 .unit-group-results-container > a:hover > span > span:last-child {
   transition: all .6s;
