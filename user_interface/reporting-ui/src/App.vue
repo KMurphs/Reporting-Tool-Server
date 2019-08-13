@@ -244,14 +244,15 @@ export default {
         }
       }
       if (data.projectcode !== '' && data.batchno !== '') {
-        for (const key in this.batchResults) {
+        // for (const key in this.batchResults) {
+        this.batchResults.forEach((key) => {
           if (this.historyResults[key].Project_Code === data.projectcode
               && this.historyResults[key].Batch_ID === data.batchno) {
             if (this.trackedUnits.indexOf(this.batchResults[key].Serial_Number) === -1) {
               this.trackedUnits.push(this.batchResults[key].Serial_Number);
             }
           }
-        }
+        });
       }
     },
     addUnits(doStart) {
@@ -262,11 +263,12 @@ export default {
     onSNSelected(msgType, data) {
       if (msgType === 'snselected' || msgType === 'unitselected') {
         const temp = [];
-        for (const key in this.historyResults) {
+        // for (const key in this.historyResults) {
+        this.historyResults.forEach((key) => {
           if (this.historyResults[key].Serial_Number === data) {
             temp.push(key);
           }
-        }
+        });
         this.updateDetailsPage(temp[0]);
       }
     },
@@ -279,9 +281,10 @@ export default {
           this.currentUnit.summary = res.data[unitID];
 
           let instances = '';
-          for (const key in this.currentUnit.summary) {
+          // for (const key in this.currentUnit.summary) {
+          Object.keys(this.currentUnit.summary).forEach((key) => {
             instances += `,${key.split(':: ')[1]}`;
-          }
+          });
 
           this.getData(`http://localhost:5001/api/v1/data/unitresults/\
           ${this.currentUnit.Serial_Number}/?inst=${instances.substr(1)}`)
@@ -293,13 +296,14 @@ export default {
       this.currentUnit.Batch_ID = this.historyResults[unitID].Batch_ID;
 
       this.groupData.batchResults = [];
-      for (const item of ['Ambient', 'Cold', 'Hot']) {
+      // for (const item of ['Ambient', 'Cold', 'Hot']) {
+      ['Ambient', 'Cold', 'Hot'].forEach((item) => {
         this.groupData.batchResults.push({
           sn: this.currentUnit.Serial_Number,
           isPass: this.currentUnit[item] !== 'FAIL',
           testgroup: item,
         });
-      }
+      });
       this.groupData.currentView = 1;
     },
     onGroupResultsSelected(container, data) {
@@ -314,14 +318,23 @@ export default {
       } else if (container === 'summaryItems') {
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
 
-        for (const key in this.currentUnit.summary) {
-          const tempKey = key.split(':: ');
+        // for (const key in this.currentUnit.summary) {
+        Object.keys(this.currentUnit.summary).forEach((key) => {
+          // const tempKey = key.split(':: ');
 
-          if (tempKey[0] === this.groupData.selectionHistory.join(': ')) {
-            this.currentUnit.currentInstance = tempKey[1];
-            break;
+          // if (tempKey[0] === this.groupData.selectionHistory.join(': ')) {
+          //   this.currentUnit.currentInstance = tempKey[1];
+          //   // break;
+          // }
+          // let tempKey; let
+          //   tempInst;
+          const [tempKey, tempInst] = key.split(':: ');
+
+          if (tempKey === this.groupData.selectionHistory.join(': ')) {
+            this.currentUnit.currentInstance = tempInst;
+            // break;
           }
-        }
+        });
 
         this.groupData.detailedResults = this.setupResultsGroups(this.currentUnit,
           'results',
@@ -342,7 +355,8 @@ export default {
     },
     setupSummaryGroups(currentUnit, rawDataKey, tokenKeyIndex, parentGroup) {
       const uiData = [];
-      for (const key in currentUnit[rawDataKey]) {
+      // for (const key in currentUnit[rawDataKey]) {
+      currentUnit[rawDataKey].forEach((key) => {
         let isAllowedToProceed = true;
         if (parentGroup !== (key.split(':: ')[0]).split(': ')[tokenKeyIndex - 1]) {
           // continue;
@@ -352,13 +366,7 @@ export default {
         if (isAllowedToProceed) {
           const item = (key.split(':: ')[0]).split(': ')[tokenKeyIndex];
 
-          let isPresent = false;
-          for (const elemt of uiData) {
-            if (elemt.testgroup === item) {
-              isPresent = true;
-              break;
-            }
-          }
+          const isPresent = uiData.find(elemt => elemt.testgroup === item);
 
           if (!isPresent) {
             uiData.push({
@@ -368,14 +376,15 @@ export default {
             });
           }
         }
-      }
+      });
       return uiData;
     },
     setupResultsGroups(currentUnit, rawDataKey, instance) {
       const uiData = [];
       let isAllowedToProceed = true;
 
-      for (const key in currentUnit[rawDataKey]) {
+      // for (const key in currentUnit[rawDataKey]) {
+      currentUnit[rawDataKey].forEach((key) => {
         if (instance !== (key.split(':: ')[0])) {
           // continue;
           isAllowedToProceed = false;
@@ -384,13 +393,7 @@ export default {
         if (isAllowedToProceed) {
           const item = currentUnit[rawDataKey][key].Test_Description;
 
-          let isPresent = false;
-          for (const elemt of uiData) {
-            if (elemt.testgroup === item) {
-              isPresent = true;
-              break;
-            }
-          }
+          const isPresent = uiData.find(elemt => elemt.testgroup === item);
 
           if (!isPresent) {
             uiData.push({
@@ -400,7 +403,7 @@ export default {
             });
           }
         }
-      }
+      });
       return uiData;
     },
     setupResultsItems(currentUnit, rawDataKey, instance, testDescription) {
@@ -421,7 +424,9 @@ export default {
         Admin_Comments: 'Admin_Comments',
         reportsection: 'Test Item Context',
       };
-      for (const key in currentUnit[rawDataKey]) {
+
+      // for (const key in currentUnit[rawDataKey]) { }
+      Object.keys(currentUnit[rawDataKey]).forEach((key) => {
         let isAllowedToContinue = true;
 
         if (instance !== (key.split(':: ')[0])) {
@@ -461,8 +466,8 @@ export default {
 
           return uiData;
         }
-      }
-      return uiData;
+        return uiData;
+      });
     },
 
     previousDetails() {

@@ -116,11 +116,23 @@ export default {
       const reqHeightStart = itemIndex * elemtHeight;
       const reqHeightEnd = (itemIndex + 1) * elemtHeight;
 
-      autocompleteitems.scrollTop = (reqHeightStart > autocompleteitems.scrollTop)
-        ? ((reqHeightEnd < autocompleteitems.scrollTop + autocompleteitems.clientHeight)
-          ? autocompleteitems.scrollTop
-          : reqHeightEnd - autocompleteitems.clientHeight)
-        : reqHeightStart;
+      // autocompleteitems.scrollTop = (reqHeightStart > autocompleteitems.scrollTop)
+      //   ? ((reqHeightEnd < autocompleteitems.scrollTop + autocompleteitems.clientHeight)
+      //     ? autocompleteitems.scrollTop
+      //     : reqHeightEnd - autocompleteitems.clientHeight)
+      //   : reqHeightStart;
+
+      const getScrollTop = (requiredHeightStart, requiredHeightEnd, itemsContainer) => {
+        if (requiredHeightStart > itemsContainer.scrollTop) {
+          if (requiredHeightEnd < itemsContainer.scrollTop + itemsContainer.clientHeight) {
+            return itemsContainer.scrollTop;
+          }
+          return requiredHeightEnd - itemsContainer.clientHeight;
+        }
+        return requiredHeightStart;
+      };
+
+      autocompleteitems.scrollTop = getScrollTop(reqHeightStart, reqHeightEnd, autocompleteitems);
     },
     onKeyDown(event) {
       if (event.keyCode === 40) {
