@@ -244,8 +244,7 @@ export default {
         }
       }
       if (data.projectcode !== '' && data.batchno !== '') {
-        // for (const key in this.batchResults) {
-        this.batchResults.forEach((key) => {
+        Object.keys(this.batchResults).forEach((key) => {
           if (this.historyResults[key].Project_Code === data.projectcode
               && this.historyResults[key].Batch_ID === data.batchno) {
             if (this.trackedUnits.indexOf(this.batchResults[key].Serial_Number) === -1) {
@@ -264,7 +263,7 @@ export default {
       if (msgType === 'snselected' || msgType === 'unitselected') {
         const temp = [];
         // for (const key in this.historyResults) {
-        this.historyResults.forEach((key) => {
+        Object.keys(this.historyResults).forEach((key) => {
           if (this.historyResults[key].Serial_Number === data) {
             temp.push(key);
           }
@@ -307,6 +306,10 @@ export default {
       this.groupData.currentView = 1;
     },
     onGroupResultsSelected(container, data) {
+      // console.log(container);
+      // console.log(data);
+      // console.log(this.groupData.currentView);
+      // console.log(this.groupData.selectionHistory);
       if (container === 'batchResults') {
         this.groupData.summaryGroups = this.setupSummaryGroups(this.currentUnit, 'summary', 1, data);
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
@@ -317,38 +320,25 @@ export default {
         this.groupData.currentView = 3;
       } else if (container === 'summaryItems') {
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
-
-        // for (const key in this.currentUnit.summary) {
         Object.keys(this.currentUnit.summary).forEach((key) => {
-          // const tempKey = key.split(':: ');
-
-          // if (tempKey[0] === this.groupData.selectionHistory.join(': ')) {
-          //   this.currentUnit.currentInstance = tempKey[1];
-          //   // break;
-          // }
-          // let tempKey; let
-          //   tempInst;
           const [tempKey, tempInst] = key.split(':: ');
-
-          if (tempKey === this.groupData.selectionHistory.join(': ')) {
+          if (tempKey === this.groupData.selectionHistory.filter((item, index) => index <= 2).join(': ')) {
             this.currentUnit.currentInstance = tempInst;
-            // break;
           }
         });
 
         this.groupData.detailedResults = this.setupResultsGroups(this.currentUnit,
           'results',
           this.currentUnit.currentInstance,
-          this.groupData.selectionHistory.join(': '));
+          this.groupData.selectionHistory.filter((item, index) => index <= 2).join(': '));
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 4;
       } else if (container === 'detailedResults') {
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
-
         this.groupData.resultSet = this.setupResultsItems(this.currentUnit,
           'results',
-          this.currentUnit.currentInstance,
-          this.groupData.selectionHistory[this.groupData.currentView - 1]);
+          this.groupData.selectionHistory.filter((item, index) => index <= 2).join(': '),
+          this.groupData.selectionHistory.filter((item, index) => index > 2).join(': '));
         this.groupData.selectionHistory[this.groupData.currentView - 1] = data;
         this.groupData.currentView = 5;
       }
@@ -356,7 +346,7 @@ export default {
     setupSummaryGroups(currentUnit, rawDataKey, tokenKeyIndex, parentGroup) {
       const uiData = [];
       // for (const key in currentUnit[rawDataKey]) {
-      currentUnit[rawDataKey].forEach((key) => {
+      Object.keys(currentUnit[rawDataKey]).forEach((key) => {
         let isAllowedToProceed = true;
         if (parentGroup !== (key.split(':: ')[0]).split(': ')[tokenKeyIndex - 1]) {
           // continue;
@@ -379,14 +369,12 @@ export default {
       });
       return uiData;
     },
-    setupResultsGroups(currentUnit, rawDataKey, instance) {
+    setupResultsGroups(currentUnit, rawDataKey, instance, testDescription) {
       const uiData = [];
-      let isAllowedToProceed = true;
 
-      // for (const key in currentUnit[rawDataKey]) {
-      currentUnit[rawDataKey].forEach((key) => {
-        if (instance !== (key.split(':: ')[0])) {
-          // continue;
+      Object.keys(currentUnit[rawDataKey]).forEach((key) => {
+        let isAllowedToProceed = true;
+        if (testDescription !== (key.split(':: ')[0])) {
           isAllowedToProceed = false;
         }
 
@@ -425,10 +413,13 @@ export default {
         reportsection: 'Test Item Context',
       };
 
-      // for (const key in currentUnit[rawDataKey]) { }
       Object.keys(currentUnit[rawDataKey]).forEach((key) => {
         let isAllowedToContinue = true;
-
+        // console.log("**************************************");
+        // console.log((key.split(':: ')[0]));
+        // console.log(instance);
+        // console.log(currentUnit[rawDataKey][key].Test_Description);
+        // console.log(testDescription);
         if (instance !== (key.split(':: ')[0])) {
           // continue;
           isAllowedToContinue = false;
@@ -446,7 +437,6 @@ export default {
             testgroup: '',
           };
 
-
           // for (const tempKey in currentUnit[rawDataKey][key]) {
           Object.keys(currentUnit[rawDataKey][key]).forEach((tempKey) => {
             let isAllowedToContinueAgain = true;
@@ -462,12 +452,9 @@ export default {
               uiData.push(temp);
             }
           });
-
-
-          return uiData;
         }
-        return uiData;
       });
+      return uiData;
     },
 
     previousDetails() {
@@ -522,8 +509,8 @@ export default {
       return new Promise((resolve) => {
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = () => {
-          if (this.readyState === 4 && this.status === 200) {
-            resolve(JSON.parse(this.responseText));
+          if (xhttp.readyState === 4 && xhttp.status === 200) {
+            resolve(JSON.parse(xhttp.responseText));
           }
         };
         xhttp.open('GET', url, true);
@@ -538,7 +525,7 @@ export default {
       .then((res) => {
         this.historyResults = res.data;
         this.snsids = {};
-        // for (const key in this.historyResults) {
+
         Object.keys(this.historyResults).forEach((key) => {
           this.historyResults[key].Serial_Number = `${this.historyResults[key].Serial_Number}`;
           this.sns.push(this.historyResults[key].Serial_Number);
